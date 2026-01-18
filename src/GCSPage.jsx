@@ -9,16 +9,15 @@ import {
     CheckCircle2,
     Globe,
     FileText,
-    School,
     Plus,
     Minus,
     X,
     User,
     Mail,
     Briefcase,
-    Search
+    Menu
 } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 // --- Assets & Constants ---
 const HGU_BLUE = "#003A78";
@@ -94,8 +93,9 @@ const GCHelper = ({ text, position = "left" }) => (
 );
 
 // 3. Navigation Bar
-const Navbar = ({ onOpenFaculty, onOpenResources }) => {
+const Navbar = ({ onOpenFaculty, onOpenResources, onOpenMajors }) => {
     const [scrolled, setScrolled] = useState(false);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -105,6 +105,7 @@ const Navbar = ({ onOpenFaculty, onOpenResources }) => {
     }, []);
 
     const scrollToSection = (id) => {
+        setIsMenuOpen(false);
         const section = document.getElementById(id);
         if (section) {
             section.scrollIntoView({ behavior: "smooth" });
@@ -116,41 +117,141 @@ const Navbar = ({ onOpenFaculty, onOpenResources }) => {
         }
     };
 
+    const navItems = [
+        { label: 'Curriculum', id: 'curriculum' },
+        { label: 'Process', id: 'process' },
+        { label: 'Requirements', id: 'requirements' },
+        { label: 'Why GCS', id: 'why-gcs' }
+    ];
+
+    const NavButton = ({ onClick, label, id }) => (
+        <button
+            onClick={onClick}
+            className="relative group py-2 focus:outline-none"
+        >
+            <span className={`uppercase tracking-widest text-[11px] font-medium transition-all duration-300 group-hover:font-extrabold ${scrolled ? 'text-slate-600 hover:text-[#003A78]' : 'text-slate-200 hover:text-white'}`}>
+                {label}
+            </span>
+            <motion.span
+                className={`absolute bottom-0 left-0 w-0 h-[2px] ${scrolled ? 'bg-[#003A78]' : 'bg-white'} transition-all duration-300 group-hover:w-full`}
+            />
+        </button>
+    );
+
     return (
-        <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${scrolled ? 'bg-white/90 backdrop-blur-md shadow-sm py-3' : 'bg-transparent py-5'}`}>
+        <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 ${scrolled ? 'bg-white/80 backdrop-blur-xl shadow-lg py-3' : 'bg-transparent py-6'}`}>
             <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
-                <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate('/')}>
-                    <img src={HGU_LOGO_URL} alt="HGU Logo" className="h-10 w-auto" />
-                    <div className={`font-bold text-xl tracking-tight ${scrolled ? 'text-slate-900' : 'text-[#003A78]'}`}>
-                        Global Convergence Studies
+                {/* Logo & Title */}
+                <div
+                    className="flex items-center gap-3 cursor-pointer group"
+                    onClick={() => { navigate('/'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                >
+                    <div className="relative overflow-hidden rounded-lg">
+                        <img src={HGU_LOGO_URL} alt="HGU Logo" className="h-9 w-auto transition-transform duration-500 group-hover:scale-110" />
+                        <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </div>
+                    <div className="flex flex-col">
+                        <span className={`font-black text-lg leading-none tracking-tighter ${scrolled ? 'text-[#003A78]' : 'text-white'}`}>
+                            GCS
+                        </span>
+                        <span className={`text-[8px] font-bold uppercase tracking-[0.2em] ${scrolled ? 'text-slate-400' : 'text-blue-200/60'}`}>
+                            Handong Global University
+                        </span>
                     </div>
                 </div>
-                <div className="hidden md:flex gap-8 text-sm font-medium text-slate-600">
-                    {[
-                        { label: 'Curriculum', id: 'curriculum' },
-                        { label: 'Process', id: 'process' },
-                        { label: 'Requirements', id: 'requirements' },
-                        { label: 'Q&A', id: 'qa' }
-                    ].map((item) => (
-                        <button
-                            key={item.id}
-                            onClick={() => scrollToSection(item.id)}
-                            className="hover:text-[#003A78] transition-colors focus:outline-none"
-                        >
-                            {item.label}
-                        </button>
+
+                {/* Desktop Menu */}
+                <div className="hidden lg:flex items-center gap-8">
+                    {navItems.map((item) => (
+                        <NavButton key={item.id} onClick={() => scrollToSection(item.id)} label={item.label} />
                     ))}
-                    <Link to="/majors" className="hover:text-[#003A78] transition-colors">Majors</Link>
-                    <button onClick={onOpenFaculty} className="hover:text-[#003A78] transition-colors focus:outline-none">Faculty</button>
-                    <button onClick={onOpenResources} className="hover:text-[#003A78] transition-colors focus:outline-none">Resources</button>
+                    <div className={`w-[1px] h-4 ${scrolled ? 'bg-slate-200' : 'bg-white/20'}`} />
+                    <NavButton onClick={onOpenMajors} label="Majors" />
+                    <NavButton onClick={onOpenFaculty} label="Faculty & Advisors" />
+                    <NavButton onClick={onOpenResources} label="Resources" />
                 </div>
+
+                {/* Desktop Actions */}
+                <div className="hidden lg:flex items-center gap-4">
+                    <a
+                        href="https://hisnet.handong.edu/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`text-[11px] font-black uppercase tracking-widest px-4 py-2 rounded-lg transition-all duration-300 ${scrolled
+                            ? 'text-[#003A78] hover:bg-blue-50'
+                            : 'text-white hover:bg-white/10'
+                            }`}
+                    >
+                        HISNET
+                    </a>
+                    <button
+                        onClick={() => scrollToSection('process')}
+                        className={`px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-[0.15em] transition-all duration-300 shadow-lg hover:shadow-blue-900/40 hover:-translate-y-0.5 active:translate-y-0 ${scrolled
+                            ? 'bg-[#003A78] text-white hover:bg-blue-800'
+                            : 'bg-white text-[#003A78] hover:bg-blue-50'
+                            }`}
+                    >
+                        Apply Now
+                    </button>
+                </div>
+
+                {/* Mobile Menu Button */}
                 <button
-                    onClick={() => scrollToSection('process')}
-                    className="bg-[#003A78] text-white px-5 py-2 rounded-full text-sm font-semibold hover:bg-blue-800 transition-colors shadow-lg shadow-blue-900/20"
+                    onClick={() => setIsMenuOpen(!isMenuOpen)}
+                    className="lg:hidden p-2 rounded-xl transition-colors focus:outline-none"
                 >
-                    Apply Now
+                    {isMenuOpen ? (
+                        <X size={26} className={scrolled ? 'text-slate-900' : 'text-white'} />
+                    ) : (
+                        <Menu size={26} className={scrolled ? 'text-slate-900' : 'text-white'} />
+                    )}
                 </button>
             </div>
+
+            {/* Mobile Drawer */}
+            <AnimatePresence>
+                {isMenuOpen && (
+                    <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="lg:hidden bg-white border-t border-slate-100 overflow-hidden"
+                    >
+                        <div className="px-6 py-8 flex flex-col gap-6">
+                            {navItems.map((item) => (
+                                <button
+                                    key={item.id}
+                                    onClick={() => scrollToSection(item.id)}
+                                    className="text-left text-lg font-bold text-slate-800 hover:text-[#003A78] transition-colors"
+                                >
+                                    {item.label}
+                                </button>
+                            ))}
+                            <div className="h-[1px] bg-slate-100" />
+                            <button onClick={onOpenMajors} className="text-left text-lg font-bold text-slate-800 hover:text-[#003A78]">Majors</button>
+                            <button onClick={onOpenFaculty} className="text-left text-lg font-bold text-slate-800 hover:text-[#003A78]">Faculty & Advisors</button>
+                            <button onClick={onOpenResources} className="text-left text-lg font-bold text-slate-800 hover:text-[#003A78]">Resources</button>
+
+                            <div className="flex flex-col gap-3 mt-4">
+                                <a
+                                    href="https://hisnet.handong.edu/"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="w-full py-4 text-center text-sm font-black uppercase tracking-widest text-[#003A78] bg-blue-50 rounded-2xl"
+                                >
+                                    HISNET
+                                </a>
+                                <button
+                                    onClick={() => scrollToSection('process')}
+                                    className="w-full py-4 text-center text-sm font-black uppercase tracking-widest text-white bg-[#003A78] rounded-2xl shadow-lg shadow-blue-900/20"
+                                >
+                                    Apply Now
+                                </button>
+                            </div>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </nav>
     );
 };
@@ -195,14 +296,36 @@ const AccordionItem = ({ question, answer }) => {
 export default function GCSPage() {
     const [facultyModalOpen, setFacultyModalOpen] = useState(false);
     const [resourcesModalOpen, setResourcesModalOpen] = useState(false);
+    const [majorsModalOpen, setMajorsModalOpen] = useState(false);
 
     const facultyList = [
-        { name: "Prof. Kyung-hwa Cho", role: "School Dean, CC Urban Planning", email: "khcho@handong.edu" },
-        { name: "Prof. Edward Purnell", role: "CC Journalism", email: "epurnell@handong.edu" },
-        { name: "Prof. David T.  S. Cho", role: "CC Political Studies", email: "dtcho@handong.edu" },
-        { name: "Prof. Ja-young Kim", role: "CC Educational Leadership", email: "jayoung.kim@handong.edu" },
-        { name: "Prof. Joseph  S.  Yi", role: "CC Political Studies", email: "joyi@handong.edu" },
-        { name: "Prof. Jung-hwee Lee", role: "Associate Dean, CC Christian Studies", email: "jhlee@handong.edu" },
+        {
+            name: "Prof. Scott Lincoln",
+            koreanName: "스캇 링컨",
+            major: "Ph.D. in Organizational Leadership, Regent University",
+            office: "Nehemiah Hall, Room 112",
+            phone: "054-260-1298",
+            email: "slincoln@handong.edu",
+            image: "/faculty/scott_lincoln.jpg"
+        },
+        {
+            name: "Prof. Jenny Kim",
+            koreanName: "제니 김",
+            major: "Ed.D, University of Southern California",
+            office: "Oseok Hall, Room 421B",
+            phone: "054-260-1506",
+            email: "jennykim@handong.edu",
+            image: "/faculty/jenny_kim.jpg"
+        },
+        {
+            name: "Prof. Bryan Alkema",
+            koreanName: "브라이언 알케마",
+            major: "M.A. Applied Linguistics, University of Southern Queensland",
+            office: "GLC, Room 208",
+            phone: "054-260-1345",
+            email: "bryan@handong.edu",
+            image: "/faculty/bryan_alkema.jpg"
+        }
     ];
 
     return (
@@ -210,30 +333,88 @@ export default function GCSPage() {
             <Navbar
                 onOpenFaculty={() => setFacultyModalOpen(true)}
                 onOpenResources={() => setResourcesModalOpen(true)}
+                onOpenMajors={() => setMajorsModalOpen(true)}
             />
 
             {/* Faculty Modal */}
             <Modal
                 isOpen={facultyModalOpen}
                 onClose={() => setFacultyModalOpen(false)}
-                title="Faculty Advisors & Staff"
+                title="Faculty & Advisors"
             >
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-12">
                     {facultyList.map((faculty, index) => (
-                        <div key={index} className="p-6 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-md transition-shadow flex items-start gap-4">
-                            <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center text-[#003A78]">
-                                <User size={24} />
+                        <div key={index} className="flex flex-col md:flex-row gap-8 items-start bg-white p-6 md:p-8 rounded-3xl border border-slate-100 shadow-sm transition-all hover:shadow-md">
+                            <div className="w-full md:w-1/3 aspect-[3/4] rounded-2xl overflow-hidden shadow-lg bg-slate-100">
+                                <img src={faculty.image} alt={faculty.name} className="w-full h-full object-cover" />
                             </div>
-                            <div>
-                                <h4 className="font-bold text-slate-800 text-lg">{faculty.name}</h4>
-                                <p className="text-[#003A78] text-sm font-semibold mb-2">{faculty.role}</p>
-                                <div className="flex items-center gap-2 text-slate-500 text-sm">
-                                    <Mail size={14} />
-                                    <span>{faculty.email}</span>
+                            <div className="w-full md:w-2/3">
+                                <h4 className="text-3xl font-bold text-[#003A78] mb-1">{faculty.name}</h4>
+                                <p className="text-slate-500 font-medium mb-6">{faculty.koreanName}</p>
+
+                                <div className="overflow-hidden rounded-xl border border-slate-100 bg-white">
+                                    <table className="w-full text-sm">
+                                        <tbody className="divide-y divide-slate-100 text-left">
+                                            <tr className="bg-slate-50/50">
+                                                <td className="px-4 py-3 font-bold text-slate-700 w-32 border-r border-slate-100">Expertise</td>
+                                                <td className="px-4 py-3 text-slate-600">{faculty.major}</td>
+                                            </tr>
+                                            <tr>
+                                                <td className="px-4 py-3 font-bold text-slate-700 border-r border-slate-100">Office</td>
+                                                <td className="px-4 py-3 text-slate-600">{faculty.office}</td>
+                                            </tr>
+                                            <tr className="bg-slate-50/50">
+                                                <td className="px-4 py-3 font-bold text-slate-700 border-r border-slate-100">Phone</td>
+                                                <td className="px-4 py-3 text-slate-600">{faculty.phone}</td>
+                                            </tr>
+                                            <tr>
+                                                <td className="px-4 py-3 font-bold text-slate-700 border-r border-slate-100">Email</td>
+                                                <td className="px-4 py-3 text-[#003A78] font-medium leading-none">{faculty.email}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                 </div>
+                                <p className="mt-6 text-slate-500 text-sm italic leading-relaxed">
+                                    Dedicated to providing interdisciplinary mentorship and guiding students through their personalized academic journey in GCS.
+                                </p>
                             </div>
                         </div>
                     ))}
+                </div>
+            </Modal>
+
+            {/* Majors Modal (Placeholder for future expansion) */}
+            <Modal
+                isOpen={majorsModalOpen}
+                onClose={() => setMajorsModalOpen(false)}
+                title="Majors & Academic Pathways"
+            >
+                <div className="p-4 text-center">
+                    <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center text-[#003A78] mx-auto mb-6">
+                        <BookOpen size={32} />
+                    </div>
+                    <h4 className="text-xl font-bold text-slate-800 mb-2">Design Your Custom Major</h4>
+                    <p className="text-slate-600 max-w-lg mx-auto mb-8">
+                        The Global Convergence School allows you to combine multiple disciplines to create a unique major that fits your calling.
+                        Past student-designed majors include:
+                    </p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
+                        {[
+                            "Studies in Education",
+                            "Christian Studies",
+                            "Urban Planning",
+                            "Artificial Intelligence and Data Science",
+                            "Film Studies",
+                            "Culture and Conflict Resolution",
+                            "International Finance Administration",
+                            "Visual Communication and Design",
+                            "International Human Services Administration"
+                        ].map((major, i) => (
+                            <div key={i} className="p-4 rounded-xl bg-slate-50 border border-slate-100 font-semibold text-[#003A78]">
+                                {major}
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </Modal>
 
@@ -301,13 +482,13 @@ export default function GCSPage() {
                                 Shape Your Own Future.
                             </p>
                             <p className="text-lg text-slate-600 font-medium max-w-lg leading-relaxed mb-8">
-                                Create a personalized academic pathway that aligns with your calling, interests, and vocational goals — all in English at Handong Global University.
+                                GCS is not just a major; it's a program that allows you to design your own 100% English-mediated major, different from any official programs at HGU. Expand your choices and shape your future with personalized academic pathways.
                             </p>
 
                             <div className="flex flex-col sm:flex-row gap-4 pointer-events-auto">
-                                <Link to="/pillars" className="bg-[#4B89DC] hover:bg-[#3572C6] text-white px-8 py-3 rounded-full font-bold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2">
+                                <button onClick={() => setMajorsModalOpen(true)} className="bg-[#4B89DC] hover:bg-[#3572C6] text-white px-8 py-3 rounded-full font-bold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2">
                                     Explore the GCS Curriculum <ArrowRight size={20} />
-                                </Link>
+                                </button>
                                 <button onClick={() => scrollToSection('process')} className="bg-white/60 backdrop-blur-md border border-white/60 text-[#003A78] px-8 py-3 rounded-full font-bold shadow-sm hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2">
                                     How to Apply <ArrowRight size={20} />
                                 </button>
@@ -351,9 +532,9 @@ export default function GCSPage() {
                             <li className="flex items-center gap-3"><CheckCircle2 size={18} className="text-[#003A78]" /> Basic Design</li>
                             <li className="flex items-center gap-3"><CheckCircle2 size={18} className="text-[#003A78]" /> Value Formation</li>
                         </ul>
-                        <Link to="/pillars" className="text-sm font-bold text-[#003A78] flex items-center gap-1 hover:underline">
+                        <button onClick={() => setMajorsModalOpen(true)} className="text-sm font-bold text-[#003A78] flex items-center gap-1 hover:underline">
                             View Pillar Details <ArrowRight size={14} />
-                        </Link>
+                        </button>
                     </Section>
 
                     {/* Keystone (Highlighted) */}
@@ -370,9 +551,9 @@ export default function GCSPage() {
                                 <li className="flex items-center gap-3"><div className="w-1.5 h-1.5 bg-blue-300 rounded-full" /> English Lecture Mix</li>
                                 <li className="flex items-center gap-3"><div className="w-1.5 h-1.5 bg-blue-300 rounded-full" /> Interdisciplinary Study</li>
                             </ul>
-                            <Link to="/majors" className="mt-8 text-sm font-bold text-blue-200 flex items-center gap-1 hover:text-white transition-colors">
+                            <button onClick={() => setMajorsModalOpen(true)} className="mt-8 text-sm font-bold text-blue-200 flex items-center gap-1 hover:text-white transition-colors">
                                 View Major Examples <ArrowRight size={14} />
-                            </Link>
+                            </button>
                         </div>
                     </Section>
 
@@ -389,9 +570,9 @@ export default function GCSPage() {
                                 <li className="flex items-center gap-3"><CheckCircle2 size={18} className="text-[#003A78]" /> Field Internship</li>
                                 <li className="flex items-center gap-3"><CheckCircle2 size={18} className="text-[#003A78]" /> Graduation Project</li>
                             </ul>
-                            <Link to="/pillars" className="text-sm font-bold text-[#003A78] flex items-center gap-1 hover:underline">
+                            <button onClick={() => setMajorsModalOpen(true)} className="text-sm font-bold text-[#003A78] flex items-center gap-1 hover:underline">
                                 View FIT Details <ArrowRight size={14} />
-                            </Link>
+                            </button>
                         </div>
                     </Section>
                 </div>
@@ -449,7 +630,7 @@ export default function GCSPage() {
                             <span className="text-[#003A78]">Requirements</span>
                         </h2>
                         <p className="text-slate-600 text-lg mb-8 leading-relaxed">
-                            We offer flexible tracks to suit your academic goals. Whether you choose a Double Major or a Deep Major, GCS provides the path to expertise.
+                            GCS assists you in creating a unique major so that you receive a Bachelor of Arts (BA) or Bachelor of Science (BS) degree that prepares you for your career or graduate school.
                         </p>
 
                         <div className="flex flex-col gap-4">
@@ -485,7 +666,7 @@ export default function GCSPage() {
                                 </div>
                                 <span className="text-4xl font-black text-slate-200">33</span>
                             </div>
-                            <p className="text-slate-500 mt-4 text-sm">Requires <strong>39-45 credits</strong> from the pool. Perfect for interdisciplinary studies.</p>
+                            <p className="text-slate-500 mt-4 text-sm">Requires <strong>33 credits</strong> from your self-designed GCS course pool. Perfect for interdisciplinary studies.</p>
                         </Section>
 
                         <Section delay={0.4} className="bg-gradient-to-br from-[#003A78] to-[#002855] p-8 rounded-3xl shadow-[0_15px_30px_rgba(0,58,120,0.25)] border-l-4 border-l-blue-400 text-white relative overflow-hidden">
@@ -497,44 +678,40 @@ export default function GCSPage() {
                                 </div>
                                 <span className="text-4xl font-black text-white/30">66</span>
                             </div>
-                            <p className="text-blue-100 mt-4 text-sm relative z-10">Requires <strong>75-84 credits</strong>. For students seeking deep expertise in the field.</p>
+                            <p className="text-blue-100 mt-4 text-sm relative z-10">Requires <strong>66 credits</strong> from your pool. For students seeking deep expertise in their self-designed field.</p>
                         </Section>
                     </div>
                 </div>
             </section>
 
-            {/* --- SECTION 4: Why Choose GCS / Q&A --- */}
-            <section id="qa" className="py-24 bg-white">
+            {/* --- SECTION 4: Why GCS --- */}
+            <section id="why-gcs" className="py-24 bg-white">
                 <div className="max-w-3xl mx-auto px-6">
                     <Section className="text-center mb-16">
-                        <h2 className="text-3xl font-bold text-slate-900">Why Choose GCS?</h2>
-                        <p className="text-slate-500 mt-3">Common questions about the program structure and eligibility.</p>
+                        <h2 className="text-3xl font-bold text-slate-900">Why GCS?</h2>
+                        <p className="text-slate-500 mt-3">Understanding the unique advantages of our program structure.</p>
                     </Section>
 
                     <Section className="space-y-2">
                         <AccordionItem
-                            question="Is GCS just a free-form major?"
-                            answer="Not exactly. While GCS allows for high flexibility, it requires a structured curriculum design. Students must demonstrate a clear academic theme and justify their course selection to ensure coherence and depth."
+                            question="What does GCS offer international students?"
+                            answer="GCS opens up the opportunity for international students to widely expand their choice of majors that can be created and taken entirely in English, addressing the limited fixed English-mediated majors."
                         />
                         <AccordionItem
-                            question="Who is GCS designed for?"
-                            answer="GCS is designed for proactive students who have specific academic goals that cannot be met by existing single majors. It fits those who want to bridge multiple disciplines to create a unique expertise profile."
+                            question="What degree will I receive?"
+                            answer="You can graduate with either a Bachelor of Arts (BA) or Bachelor of Science (BS) degree, depending on the nature of the self-designed major you create."
                         />
                         <AccordionItem
-                            question="How do students define their academic theme?"
-                            answer="Students work with an advisor to define a core theme. This theme acts as the 'thesis' of your major, guiding which courses are relevant. It must be specific enough to be meaningful but broad enough to allow diverse coursework."
+                            question="Is 'Global Convergence Studies' the name of the major?"
+                            answer="GCS itself is not a major; it is a program that helps you design your own unique major. Your transcript will reflect the specific major you designed (e.g., 'Studies in Education')."
                         />
                         <AccordionItem
-                            question="Are there restrictions on course selection?"
-                            answer="Yes. Courses must be 2000-level or higher (with some exceptions for foundational courses). At least 50% of credits must come from two different existing majors to ensure interdisciplinary breadth."
+                            question="How much support do I get in designing my major?"
+                            answer="We walk with you throughout the whole program! Skilled and experienced GCS professors provide 1:1 mentoring to guide and assist you while you create your major and prepare for career success."
                         />
                         <AccordionItem
-                            question="How is this different from a Second Major?"
-                            answer="A standard Second Major follows a pre-set curriculum defined by the department. GCS allows you to 'build' the curriculum itself, tailoring it to a specific career path or research interest that doesn't exist yet as a standard major."
-                        />
-                        <AccordionItem
-                            question="What is the review and approval timeline?"
-                            answer="The application is reviewed by a faculty committee. This process typically takes 2-4 weeks after submission. Students are advised to start counseling at least one semester before they intend to declare the major."
+                            question="What are some examples of past self-designed majors?"
+                            answer="Past students have designed majors in Christian Studies, Urban Planning, AI and Data Science, Film Studies, Conflict Resolution, International Finance, and more."
                         />
                     </Section>
                 </div>
