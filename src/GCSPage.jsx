@@ -250,12 +250,15 @@ const Navbar = ({ onOpenFaculty, onOpenResources, onOpenMajors }) => {
                                 >
                                     HISNET
                                 </a>
-                                <button
-                                    onClick={() => scrollToSection('process')}
-                                    className="w-full py-4 text-center text-sm font-black uppercase tracking-widest text-white bg-[#003A78] rounded-2xl shadow-lg shadow-blue-900/20"
-                                >
-                                    Apply Now
-                                </button>
+                                <div className="flex flex-col gap-1 items-center">
+                                    <button
+                                        onClick={() => scrollToSection('process')}
+                                        className="w-full py-4 text-center text-sm font-black uppercase tracking-widest text-white bg-[#003A78] rounded-2xl shadow-lg shadow-blue-900/20"
+                                    >
+                                        Apply Now
+                                    </button>
+                                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">Start by taking VWC (CCE24001)</span>
+                                </div>
                             </div>
                         </div>
                     </motion.div>
@@ -506,17 +509,27 @@ export default function GCSPage() {
                                 Design Your Own Major. <br />
                                 Shape Your Own Future.
                             </p>
-                            <p className="text-lg text-slate-600 font-medium max-w-lg leading-relaxed mb-8">
+                            <p className="text-lg text-slate-600 font-medium max-w-lg leading-relaxed mb-4">
                                 GCS is a program operated under the Creative Convergence Education (CCE) that allows you to design your own major primarily in English (with limited exceptions subject to committee approval). Expand your choices and shape your future with personalized academic pathways.
                             </p>
+                            <div className="mb-8 p-4 bg-[#003A78]/5 backdrop-blur-sm border-l-4 border-[#003A78] rounded-r-2xl">
+                                <p className="text-[#003A78] font-bold text-base">
+                                    "The first step to joining GCS is enrolling in Vision, Work & Calling (CCE24001)."
+                                </p>
+                            </div>
 
                             <div className="flex flex-col sm:flex-row gap-4 pointer-events-auto">
-                                <button onClick={() => setMajorsModalOpen(true)} className="bg-[#4B89DC] hover:bg-[#3572C6] text-white px-8 py-3 rounded-full font-bold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2">
-                                    Explore the GCS Curriculum <ArrowRight size={20} />
-                                </button>
-                                <button onClick={() => scrollToSection('process')} className="bg-white/60 backdrop-blur-md border border-white/60 text-[#003A78] px-8 py-3 rounded-full font-bold shadow-sm hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2">
-                                    How to Apply <ArrowRight size={20} />
-                                </button>
+                                <div className="flex flex-col gap-2">
+                                    <button onClick={() => setMajorsModalOpen(true)} className="bg-[#4B89DC] hover:bg-[#3572C6] text-white px-8 py-3 rounded-full font-bold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2">
+                                        Explore the GCS Curriculum <ArrowRight size={20} />
+                                    </button>
+                                </div>
+                                <div className="flex flex-col gap-2">
+                                    <button onClick={() => scrollToSection('process')} className="bg-white/60 backdrop-blur-md border border-white/60 text-[#003A78] px-8 py-3 rounded-full font-bold shadow-sm hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2">
+                                        How to Apply <ArrowRight size={20} />
+                                    </button>
+                                    <span className="text-[10px] text-slate-400 font-bold ml-4 uppercase tracking-tighter">Start by taking VWC (CCE24001)</span>
+                                </div>
                             </div>
                         </motion.div>
                     </div>
@@ -618,27 +631,36 @@ export default function GCSPage() {
 
                         <div className="grid grid-cols-1 md:grid-cols-5 gap-6 relative z-10">
                             {[
-                                { step: "01", title: "Counseling", desc: "Advisor Meeting" },
-                                { step: "02", title: "Drafting", desc: "VWC Midterm" },
+                                { step: "01", title: "Enrollment", desc: "Take VWC (CCE24001)" },
+                                { step: "02", title: "Midterm Project", desc: "Draft GCS Application" },
                                 { step: "03", title: "Review", desc: "Document Check" },
                                 { step: "04", title: "Evaluation", desc: "Committee Review" },
-                                { step: "05", title: "Approval", desc: "Program Entry" },
+                                { step: "05", title: "Approval", desc: "Official GCS Entry" },
                             ].map((item, index) => (
-                                <Section key={index} delay={index * 0.1} className="group">
-                                    <div className="bg-white border border-slate-100 p-6 rounded-2xl text-center shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 hover:border-blue-200 cursor-default">
+                                <Section key={index} delay={index * 0.1} className="group flex flex-col items-center">
+                                    <div className="bg-white border border-slate-100 p-6 rounded-2xl text-center shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 hover:border-blue-200 cursor-default w-full">
                                         <div className="w-10 h-10 mx-auto bg-slate-50 text-[#003A78] rounded-full flex items-center justify-center font-bold mb-4 group-hover:bg-[#003A78] group-hover:text-white transition-colors">
                                             {item.step}
                                         </div>
-                                        <h4 className="font-bold text-slate-900 mb-1">{item.title}</h4>
+                                        <h4 className="font-bold text-slate-900 mb-1 leading-tight">{item.title}</h4>
                                         <p className="text-xs text-slate-500">{item.desc}</p>
                                     </div>
+                                    {index === 0 && (
+                                        <motion.div
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
+                                            className="mt-4 text-[10px] font-black text-[#003A78] uppercase tracking-widest bg-blue-50 px-3 py-1 rounded-full border border-blue-100"
+                                        >
+                                            Mandatory First Step
+                                        </motion.div>
+                                    )}
                                 </Section>
                             ))}
                         </div>
                     </div>
 
                     <div className="mt-12 flex flex-col items-center gap-6">
-                        <GCHelper position="center" text="Your GCS Application in VWC (CCE24001) determines program entry approval." />
+                        <GCHelper position="center" text="Students do not apply directly to GCS. Entry begins by taking 'Vision, Work & Calling (CCE24001)', where the GCS Application is completed as the Midterm Project." />
                         <div className="text-xs text-slate-400 italic max-w-2xl text-center">
                             * Major Seminar 1 & 2 are approval-based courses requiring advance coordination with faculty and Academic Affairs.
                         </div>
@@ -679,7 +701,10 @@ export default function GCSPage() {
                         </div>
 
                         <div className="mt-8 flex flex-col gap-4">
-                            <GCHelper text="Credit pool must exceed requirements to account for availability and schedule conflicts." />
+                            <GCHelper text="The path to GCS entry: Enrolling in VWC → Midterm Application → Committee Review → Approval." />
+                            <div className="p-4 bg-blue-50 rounded-2xl border border-blue-100 text-xs text-[#003A78] font-bold leading-relaxed">
+                                Getting Started: The first step to joining GCS is enrolling in Vision, Work & Calling (CCE24001). You must complete this course before submitting a GCS application.
+                            </div>
                             <div className="p-4 bg-amber-50 rounded-2xl border border-amber-100 text-xs text-amber-800 leading-relaxed">
                                 <strong>Important:</strong> Graduation requires completion of the Final Integration Task (FIT), which serves as the ultimate validation of your self-designed academic pathway.
                             </div>
@@ -739,6 +764,10 @@ export default function GCSPage() {
                         <AccordionItem
                             question="How much support do I get in designing my major?"
                             answer="We walk with you throughout the whole program! Skilled and experienced GCS professors provide 1:1 mentoring to guide and assist you while you create your major and prepare for career success."
+                        />
+                        <AccordionItem
+                            question="How do I get started and apply to GCS?"
+                            answer="It is critical to understand that students do NOT apply directly to GCS. Entry into the GCS program begins exclusively by enrolling in 'Vision, Work & Calling (CCE24001)'. The official GCS Application is completed as the MIDTERM PROJECT of this course, followed by a committee review and approval process."
                         />
                         <AccordionItem
                             question="What are some examples of past self-designed majors?"
