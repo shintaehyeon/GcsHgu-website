@@ -22,6 +22,7 @@ import { useNavigate } from 'react-router-dom';
 // --- Assets & Constants ---
 const HGU_BLUE = "#003A78";
 const HGU_LOGO_URL = "/logo.png";
+const GCS_LOGO_URL = "/gcs-logo.png";
 
 // --- Components ---
 
@@ -146,16 +147,24 @@ const Navbar = ({ onOpenFaculty, onOpenResources, onOpenMajors }) => {
                     className="flex items-center gap-3 cursor-pointer group"
                     onClick={() => { navigate('/'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
                 >
-                    <div className="relative overflow-hidden rounded-lg">
-                        <img src={HGU_LOGO_URL} alt="HGU Logo" className="h-9 w-auto transition-transform duration-500 group-hover:scale-110" />
-                        <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <div className="flex items-center gap-2.5">
+                        <div className="relative overflow-hidden rounded-lg">
+                            <img src={HGU_LOGO_URL} alt="HGU Logo" className="h-9 w-auto transition-transform duration-500 group-hover:scale-110" />
+                            <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </div>
+                        {/* GCS Logo Addition - Small & Subtle */}
+                        <img
+                            src={GCS_LOGO_URL}
+                            alt="GCS Logo"
+                            className="h-6 w-auto opacity-80"
+                        />
                     </div>
                     <div className="flex flex-col">
                         <span className={`font-black text-lg leading-none tracking-tighter ${scrolled ? 'text-[#003A78]' : 'text-white'}`}>
                             GCS
                         </span>
                         <span className={`text-[8px] font-bold uppercase tracking-[0.2em] ${scrolled ? 'text-slate-400' : 'text-blue-200/60'}`}>
-                            Handong Global University
+                            Creative Convergence Education (CCE)
                         </span>
                     </div>
                 </div>
@@ -297,6 +306,22 @@ export default function GCSPage() {
     const [facultyModalOpen, setFacultyModalOpen] = useState(false);
     const [resourcesModalOpen, setResourcesModalOpen] = useState(false);
     const [majorsModalOpen, setMajorsModalOpen] = useState(false);
+    const [easterEggQuote, setEasterEggQuote] = useState("");
+    const [isQuotePopupOpen, setIsQuotePopupOpen] = useState(false);
+
+    const quotes = [
+        "Your vision is the only limit to what you can create.",
+        "Where different disciplines meet, new worlds are born.",
+        "Design your major, design your future.",
+        "Convergence is the art of seeing connections where others see walls.",
+        "Education is not the filling of a pail, but the lighting of a fire."
+    ];
+
+    const handleLogoClick = () => {
+        const randomIndex = Math.floor(Math.random() * quotes.length);
+        setEasterEggQuote(quotes[randomIndex]);
+        setIsQuotePopupOpen(true);
+    };
 
     const facultyList = [
         {
@@ -482,7 +507,7 @@ export default function GCSPage() {
                                 Shape Your Own Future.
                             </p>
                             <p className="text-lg text-slate-600 font-medium max-w-lg leading-relaxed mb-8">
-                                GCS is not just a major; it's a program that allows you to design your own 100% English-mediated major, different from any official programs at HGU. Expand your choices and shape your future with personalized academic pathways.
+                                GCS is a program operated under the Creative Convergence Education (CCE) that allows you to design your own major primarily in English (with limited exceptions subject to committee approval). Expand your choices and shape your future with personalized academic pathways.
                             </p>
 
                             <div className="flex flex-col sm:flex-row gap-4 pointer-events-auto">
@@ -528,7 +553,7 @@ export default function GCSPage() {
                         <h3 className="text-2xl font-bold text-slate-800 mb-2">Cornerstone</h3>
                         <p className="text-slate-500 font-medium mb-6 text-sm uppercase tracking-wide">Foundation (10-20 Credits)</p>
                         <ul className="space-y-3 text-slate-600 mb-6">
-                            <li className="flex items-center gap-3"><CheckCircle2 size={18} className="text-[#003A78]" /> VWC (CCE24001)</li>
+                            <li className="flex items-center gap-3"><CheckCircle2 size={18} className="text-[#003A78]" /> VWC Midterm Project</li>
                             <li className="flex items-center gap-3"><CheckCircle2 size={18} className="text-[#003A78]" /> Basic Design</li>
                             <li className="flex items-center gap-3"><CheckCircle2 size={18} className="text-[#003A78]" /> Value Formation</li>
                         </ul>
@@ -566,8 +591,8 @@ export default function GCSPage() {
                             <h3 className="text-2xl font-bold text-slate-800 mb-2">Capstone</h3>
                             <p className="text-slate-500 font-medium mb-6 text-sm uppercase tracking-wide">Completion (30-40 Credits)</p>
                             <ul className="space-y-3 text-slate-600 mb-6">
-                                <li className="flex items-center gap-3"><CheckCircle2 size={18} className="text-[#003A78]" /> FIT Program</li>
-                                <li className="flex items-center gap-3"><CheckCircle2 size={18} className="text-[#003A78]" /> Field Internship</li>
+                                <li className="flex items-center gap-3"><CheckCircle2 size={18} className="text-[#003A78]" /> FIT (Required)</li>
+                                <li className="flex items-center gap-3"><CheckCircle2 size={18} className="text-[#003A78]" /> Major Seminar 1 & 2</li>
                                 <li className="flex items-center gap-3"><CheckCircle2 size={18} className="text-[#003A78]" /> Graduation Project</li>
                             </ul>
                             <button onClick={() => setMajorsModalOpen(true)} className="text-sm font-bold text-[#003A78] flex items-center gap-1 hover:underline">
@@ -594,10 +619,10 @@ export default function GCSPage() {
                         <div className="grid grid-cols-1 md:grid-cols-5 gap-6 relative z-10">
                             {[
                                 { step: "01", title: "Counseling", desc: "Advisor Meeting" },
-                                { step: "02", title: "Drafting", desc: "Fill Application" },
+                                { step: "02", title: "Drafting", desc: "VWC Midterm" },
                                 { step: "03", title: "Review", desc: "Document Check" },
-                                { step: "04", title: "Evaluation", desc: "Faculty Committee" },
-                                { step: "05", title: "Approval", desc: "Final Decision" },
+                                { step: "04", title: "Evaluation", desc: "Committee Review" },
+                                { step: "05", title: "Approval", desc: "Program Entry" },
                             ].map((item, index) => (
                                 <Section key={index} delay={index * 0.1} className="group">
                                     <div className="bg-white border border-slate-100 p-6 rounded-2xl text-center shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 hover:border-blue-200 cursor-default">
@@ -612,8 +637,11 @@ export default function GCSPage() {
                         </div>
                     </div>
 
-                    <div className="mt-12 flex justify-center">
-                        <GCHelper position="center" text="Make sure to complete the Counseling step before drafting your application!" />
+                    <div className="mt-12 flex flex-col items-center gap-6">
+                        <GCHelper position="center" text="Your GCS Application in VWC (CCE24001) determines program entry approval." />
+                        <div className="text-xs text-slate-400 italic max-w-2xl text-center">
+                            * Major Seminar 1 & 2 are approval-based courses requiring advance coordination with faculty and Academic Affairs.
+                        </div>
                     </div>
                 </div>
             </section>
@@ -630,7 +658,7 @@ export default function GCSPage() {
                             <span className="text-[#003A78]">Requirements</span>
                         </h2>
                         <p className="text-slate-600 text-lg mb-8 leading-relaxed">
-                            GCS assists you in creating a unique major so that you receive a Bachelor of Arts (BA) or Bachelor of Science (BS) degree that prepares you for your career or graduate school.
+                            GCS operates under the CCE. The BA/BS degree type is determined by the academic structure of your designed major and committee approval, rather than student preference alone.
                         </p>
 
                         <div className="flex flex-col gap-4">
@@ -650,8 +678,11 @@ export default function GCSPage() {
                             </div>
                         </div>
 
-                        <div className="mt-8">
-                            <GCHelper text="Check the handbook for specific MOOC platforms." />
+                        <div className="mt-8 flex flex-col gap-4">
+                            <GCHelper text="Credit pool must exceed requirements to account for availability and schedule conflicts." />
+                            <div className="p-4 bg-amber-50 rounded-2xl border border-amber-100 text-xs text-amber-800 leading-relaxed">
+                                <strong>Important:</strong> Graduation requires completion of the Final Integration Task (FIT), which serves as the ultimate validation of your self-designed academic pathway.
+                            </div>
                         </div>
 
                     </Section>
@@ -695,11 +726,11 @@ export default function GCSPage() {
                     <Section className="space-y-2">
                         <AccordionItem
                             question="What does GCS offer international students?"
-                            answer="GCS opens up the opportunity for international students to widely expand their choice of majors that can be created and taken entirely in English, addressing the limited fixed English-mediated majors."
+                            answer="GCS opens up the opportunity for international students to expand their choice of majors that can be created and taken primarily in English, with limited exceptions subject to committee approval."
                         />
                         <AccordionItem
                             question="What degree will I receive?"
-                            answer="You can graduate with either a Bachelor of Arts (BA) or Bachelor of Science (BS) degree, depending on the nature of the self-designed major you create."
+                            answer="BA/BS degree type is determined by the specific academic structure of your designed major and is subject to committee approval, ensuring alignment with institutional standards."
                         />
                         <AccordionItem
                             question="Is 'Global Convergence Studies' the name of the major?"
@@ -718,6 +749,47 @@ export default function GCSPage() {
             </section>
 
 
+            {/* --- SECTION 5: Branding & Identity --- */}
+            <section className="py-24 bg-white border-t border-slate-100">
+                <div className="max-w-4xl mx-auto px-6">
+                    <Section className="text-center">
+                        <h2 className="text-3xl font-bold text-slate-900 mb-12">About the GCS Logo & Motto</h2>
+
+                        <div className="mb-16 flex justify-center">
+                            <img src={GCS_LOGO_URL} alt="GCS Logo Story" className="h-40 w-auto" />
+                        </div>
+
+                        <div className="text-slate-600 leading-relaxed text-left space-y-8 md:text-lg max-w-3xl mx-auto">
+                            <p>
+                                The logotype of the Global Convergence Studies program was designed to provide a visual identity for GCS in a new season.
+                            </p>
+                            <p>
+                                Its shape of a 'Double Diamond' references the idea of 'divergence' and 'convergence'
+                                in the design-thinking model of the same name. <br />
+                                The rich green colour suggests life, vibrancy, growth, and originality.
+                            </p>
+                            <p>
+                                The motto beneath is that of the School of Creative Convergence Education, under which GCS is offered. <br />
+                                While 'create' angles downward, as if digging deeply into the subconscious and the root sources of creativity,
+                                'aspire' rises, reaching upward to new goals and fresh artistry. <br />
+                                CCE wants to support your aspirations and walk with you as you create and shape your future.
+                            </p>
+                            <p>
+                                The typeface used for the letters of GCS is 'Diamond SF Regular',
+                                a modern angle-edged Grotesk font, reinforcing the diamond motif in both name and shape.
+                            </p>
+                            <p>
+                                Lastly, the theme of 'diamond' refers to not only the shape but the jewel and its many facets:<br />
+                                diamonds are beautiful, durable, and useful. <br />
+                                It is our hope that you, our students, can shine brightly in the world
+                                after you have passed through the GCS process
+                                of discovering your own unique beauty, strength, and vocation.
+                            </p>
+                        </div>
+                    </Section>
+                </div>
+            </section>
+
             {/* --- FOOTER (Refined & Minimal) --- */}
             <footer id="contact" className="bg-white border-t border-slate-200 pt-16 pb-12">
                 <div className="max-w-7xl mx-auto px-6">
@@ -730,8 +802,9 @@ export default function GCSPage() {
                                 </div>
                             </div>
                             <p className="text-slate-500 text-sm leading-relaxed max-w-sm">
-                                Handong Global University<br />
-                                558, Handong-ro, Heunghae-eup, Buk-gu, Pohang-si, Gyeongbuk, Republic of Korea
+                                Creative Convergence Education (CCE), Handong Global University<br />
+                                558, Handong-ro, Heunghae-eup, Buk-gu, Pohang-si, Gyeongbuk, Republic of Korea<br />
+                                <span className="text-xs">Official forms and HISNET access are managed through CCE administration.</span>
                             </p>
                         </div>
 
@@ -741,7 +814,7 @@ export default function GCSPage() {
                                 <li><a href="#" className="hover:text-[#003A78] transition-colors">Academic Calendar</a></li>
                                 <li><a href="#" className="hover:text-[#003A78] transition-colors">Course Handbook</a></li>
                                 <li><a href="#" className="hover:text-[#003A78] transition-colors">Scholarship Info</a></li>
-                                <li><a href="#" className="hover:text-[#003A78] transition-colors">Contact Us</a></li>
+                                <li><button onClick={() => setFacultyModalOpen(true)} className="hover:text-[#003A78] transition-colors text-left focus:outline-none">Contact Us</button></li>
                             </ul>
                         </div>
 
@@ -752,16 +825,84 @@ export default function GCSPage() {
                                 <li><a href="#" className="hover:text-[#003A78] transition-colors">Terms of Service</a></li>
                             </ul>
                         </div>
+
+                        {/* GCS Logo in Bottom Area - Interactive Easter Egg */}
+                        <div className="flex md:justify-end items-end pt-8">
+                            <motion.img
+                                src={GCS_LOGO_URL}
+                                alt="GCS Logo"
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95, opacity: 0.8 }}
+                                onClick={handleLogoClick}
+                                className="h-16 w-auto cursor-pointer opacity-30 grayscale hover:opacity-100 transition-opacity"
+                            />
+                        </div>
                     </div>
 
                     <div className="border-t border-slate-100 pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-slate-400">
-                        <p>&copy; 2024 Handong Global University. All rights reserved.</p>
+                        <p>&copy; 2026 Handong Global University. All rights reserved.</p>
                         <div className="mt-2 md:mt-0">
                             <span className="opacity-70">Designed for GCS.</span>
                         </div>
                     </div>
                 </div>
             </footer>
+
+            {/* Easter Egg Enhanced Quote Popup */}
+            <AnimatePresence>
+                {isQuotePopupOpen && (
+                    <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 md:p-12 overflow-hidden">
+                        {/* Backdrop with Heavy Blur */}
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setIsQuotePopupOpen(false)}
+                            className="absolute inset-0 bg-[#003A78]/60 backdrop-blur-2xl"
+                        />
+
+                        {/* Visual Diamond Pattern Background */}
+                        <motion.div
+                            initial={{ scale: 0.8, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 0.1 }}
+                            exit={{ scale: 0.8, opacity: 0 }}
+                            className="absolute inset-0 pointer-events-none flex items-center justify-center overflow-hidden"
+                        >
+                            <div className="w-[800px] h-[800px] border-[100px] border-white rounded-[200px] rotate-45 transform" />
+                        </motion.div>
+
+                        {/* Content Container */}
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                            className="relative max-w-5xl w-full text-center z-10"
+                        >
+                            <div className="mb-8 flex justify-center">
+                                <div className="w-20 h-2 bg-white/30 rounded-full mb-4" />
+                            </div>
+
+                            <h2 className="text-4xl md:text-6xl lg:text-7xl font-black text-white leading-tight mb-12 tracking-tighter italic">
+                                "{easterEggQuote}"
+                            </h2>
+
+                            <div className="flex flex-col items-center gap-6">
+                                <div className="h-[1px] w-24 bg-white/20" />
+                                <span className="text-white/60 text-sm md:text-base font-bold uppercase tracking-[0.3em]">
+                                    Global Convergence Studies
+                                </span>
+                                <button
+                                    onClick={() => setIsQuotePopupOpen(false)}
+                                    className="mt-8 px-10 py-4 bg-white text-[#003A78] rounded-full font-black text-xs uppercase tracking-widest hover:bg-blue-50 transition-colors shadow-2xl flex items-center gap-2 group"
+                                >
+                                    Inspiring <X size={16} className="transition-transform group-hover:rotate-90" />
+                                </button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }
