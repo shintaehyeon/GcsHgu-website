@@ -852,23 +852,23 @@ export default function GCSPage() {
             <AnimatePresence>
                 {isQuotePopupOpen && (
                     <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 md:p-12 overflow-hidden">
-                        {/* Backdrop with Heavy Blur */}
+                        {/* Cinematic Background Image with Overlay */}
                         <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            onClick={() => setIsQuotePopupOpen(false)}
-                            className="absolute inset-0 bg-[#003A78]/60 backdrop-blur-2xl"
-                        />
-
-                        {/* Visual Diamond Pattern Background */}
-                        <motion.div
-                            initial={{ scale: 0.8, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 0.1 }}
-                            exit={{ scale: 0.8, opacity: 0 }}
-                            className="absolute inset-0 pointer-events-none flex items-center justify-center overflow-hidden"
+                            initial={{ opacity: 0, scale: 1.1 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 1.1 }}
+                            transition={{ duration: 1.5, ease: "easeOut" }}
+                            className="absolute inset-0 z-0"
                         >
-                            <div className="w-[800px] h-[800px] border-[100px] border-white rounded-[200px] rotate-45 transform" />
+                            <img
+                                src="/easter-egg-bg.png"
+                                alt="Roman Statue Background"
+                                className="w-full h-full object-cover"
+                            />
+                            <div
+                                className="absolute inset-0 bg-[#003A78]/70 backdrop-blur-sm cursor-pointer"
+                                onClick={() => setIsQuotePopupOpen(false)}
+                            />
                         </motion.div>
 
                         {/* Content Container */}
