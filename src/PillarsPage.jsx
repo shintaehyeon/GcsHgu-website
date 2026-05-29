@@ -11,7 +11,7 @@ const PillarSection = ({ title, subtitle, icon: Icon, color, content, details })
                     <Icon size={32} />
                 </div>
                 <h2 className="text-4xl font-extrabold text-slate-900 mb-4">{title}</h2>
-                <p className="text-[#003A78] font-bold text-lg mb-6">{subtitle}</p>
+                <p className="text-[var(--fallback-remove-me-900, #2d4b15)] font-bold text-lg mb-6">{subtitle}</p>
                 <div className="text-slate-600 leading-relaxed space-y-4 text-lg">
                     {content.map((p, i) => <p key={i}>{p}</p>)}
                 </div>
@@ -20,7 +20,7 @@ const PillarSection = ({ title, subtitle, icon: Icon, color, content, details })
                 {details.map((detail, i) => (
                     <div key={i} className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
                         <h4 className="font-bold text-slate-800 mb-2 flex items-center gap-2">
-                            <ChevronRight size={18} className="text-[#003A78]" />
+                            <ChevronRight size={18} className="text-[var(--fallback-remove-me-900, #2d4b15)]" />
                             {detail.label}
                         </h4>
                         <p className="text-slate-500 text-sm leading-relaxed">{detail.value}</p>
@@ -52,12 +52,12 @@ const PillarsPage = () => {
             {/* Header */}
             <header className="bg-white border-b border-slate-100 py-12 px-6">
                 <div className="max-w-7xl mx-auto">
-                    <Link to="/" className="inline-flex items-center gap-2 text-slate-400 hover:text-[#003A78] transition-colors mb-4 group">
+                    <Link to="/" className="inline-flex items-center gap-2 text-slate-400 hover:text-[var(--fallback-remove-me-900, #2d4b15)] transition-colors mb-4 group">
                         <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
                         <span className="font-medium text-sm">Back to Home</span>
                     </Link>
                     <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight">
-                        Core Pillars: <span className="text-[#003A78]">VWC & FIT</span>
+                        Core Pillars: <span className="text-[var(--fallback-remove-me-900, #2d4b15)]">VWC & FIT</span>
                     </h1>
                 </div>
             </header>
@@ -85,7 +85,7 @@ const PillarsPage = () => {
                     title="FIT"
                     subtitle="Field Internship and Training"
                     icon={Briefcase}
-                    color="bg-gradient-to-tr from-blue-500 to-[#003A78]"
+                    color="bg-gradient-to-tr from-gcs-500 to-[var(--fallback-remove-me-900, #2d4b15)]"
                     content={[
                         "FIT bridge the gap between academic theory and real-world practice. It is a mandatory requirement for all GCS majors to ensure they are prepared for the global job market.",
                         "Students can choose from domestic or international internships, research projects, or social contribution activities that align with their specialized academic theme."
@@ -99,14 +99,14 @@ const PillarsPage = () => {
 
                 {/* Call to Action */}
                 <Section className="bg-white rounded-3xl p-12 text-center border border-slate-100 shadow-xl overflow-hidden relative">
-                    <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-amber-400 via-[#003A78] to-blue-500"></div>
-                    <Target size={48} className="mx-auto text-[#003A78] mb-6" />
+                    <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-amber-400 via-[var(--fallback-remove-me-900, #2d4b15)] to-gcs-500"></div>
+                    <Target size={48} className="mx-auto text-[var(--fallback-remove-me-900, #2d4b15)] mb-6" />
                     <h3 className="text-3xl font-bold text-slate-900 mb-4">Ready to Start Your Journey?</h3>
                     <p className="text-slate-500 max-w-2xl mx-auto mb-8 text-lg">
                         Browse our resource library for application forms and specific course guidelines to start building your unique major.
                     </p>
                     <div className="flex justify-center gap-4">
-                        <Link to="/" className="bg-[#003A78] text-white px-8 py-3 rounded-full font-bold hover:bg-blue-800 transition-colors">
+                        <Link to="/" className="bg-[var(--fallback-remove-me-900, #2d4b15)] text-white px-8 py-3 rounded-full font-bold hover:bg-gcs-800 transition-colors">
                             Apply for GCS
                         </Link>
                     </div>

@@ -17,10 +17,10 @@ import {
     Briefcase,
     Menu
 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 // --- Assets & Constants ---
-const HGU_BLUE = "#003A78";
+const HGU_BLUE = "var(--fallback-remove-me-900, #2d4b15)";
 const HGU_LOGO_URL = "/logo.png";
 const GCS_LOGO_URL = "/gcs-logo.png";
 
@@ -45,7 +45,7 @@ const Modal = ({ isOpen, onClose, title, children }) => (
                     className="relative bg-white/90 backdrop-blur-xl w-full max-w-4xl max-h-[90vh] overflow-hidden rounded-3xl shadow-2xl border border-white/50 flex flex-col"
                 >
                     <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-white/50">
-                        <h3 className="text-2xl font-bold text-[#003A78]">{title}</h3>
+                        <h3 className="text-2xl font-bold text-gcs-900">{title}</h3>
                         <button
                             onClick={onClose}
                             className="p-2 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors"
@@ -83,11 +83,11 @@ const GCHelper = ({ text, position = "left" }) => (
         transition={{ delay: 0.3 }}
         className={`flex items-start gap-3 max-w-md ${position === 'center' ? 'mx-auto' : ''}`}
     >
-        <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-tr from-[#003A78] to-blue-500 text-white flex items-center justify-center font-bold shadow-lg z-10">
+        <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-tr from-gcs-900 to-gcs-500 text-white flex items-center justify-center font-bold shadow-lg z-10">
             GC
         </div>
-        <div className="relative bg-white/80 backdrop-blur-sm border border-blue-100 p-3 rounded-2xl rounded-tl-none shadow-sm text-sm text-slate-600 leading-snug">
-            <span className="text-[#003A78] font-bold block text-xs mb-1">Guide Tip</span>
+        <div className="relative bg-white/80 backdrop-blur-sm border border-gcs-100 p-3 rounded-2xl rounded-tl-none shadow-sm text-sm text-slate-600 leading-snug">
+            <span className="text-gcs-900 font-bold block text-xs mb-1">Guide Tip</span>
             {text}
         </div>
     </motion.div>
@@ -130,47 +130,48 @@ const Navbar = ({ onOpenFaculty, onOpenResources, onOpenMajors }) => {
             onClick={onClick}
             className="relative group py-2 focus:outline-none"
         >
-            <span className={`uppercase tracking-widest text-[11px] font-medium transition-all duration-300 group-hover:font-extrabold ${scrolled ? 'text-slate-600 hover:text-[#003A78]' : 'text-slate-200 hover:text-white'}`}>
+            <span className={`uppercase tracking-widest text-[11px] font-medium transition-all duration-300 group-hover:font-extrabold text-slate-700 hover:text-gcs-900`}>
                 {label}
             </span>
             <motion.span
-                className={`absolute bottom-0 left-0 w-0 h-[2px] ${scrolled ? 'bg-[#003A78]' : 'bg-white'} transition-all duration-300 group-hover:w-full`}
+                className={`absolute bottom-0 left-0 w-0 h-[2px] bg-gcs-900 transition-all duration-300 group-hover:w-full`}
             />
         </button>
     );
 
     return (
         <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 ${scrolled ? 'bg-white/80 backdrop-blur-xl shadow-lg py-3' : 'bg-transparent py-6'}`}>
-            <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
+            <div className="max-w-7xl mx-auto px-6 flex justify-between items-center gap-6 xl:gap-8">
                 {/* Logo & Title */}
                 <div
-                    className="flex items-center gap-3 cursor-pointer group"
+                    className="flex items-center gap-3.5 cursor-pointer group shrink-0"
                     onClick={() => { navigate('/'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
                 >
-                    <div className="flex items-center gap-2.5">
-                        <div className="relative overflow-hidden rounded-lg">
-                            <img src={HGU_LOGO_URL} alt="HGU Logo" className="h-9 w-auto transition-transform duration-500 group-hover:scale-110" />
-                            <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-                        </div>
-                        {/* GCS Logo Addition - Small & Subtle */}
+                    <div className="flex items-center gap-3 shrink-0">
+                        <img
+                            src={HGU_LOGO_URL}
+                            alt="HGU Logo"
+                            className="h-9 w-9 shrink-0 object-contain transition-transform duration-500 group-hover:scale-105"
+                        />
+                        <div className="w-[1px] h-6 bg-slate-200 shrink-0" />
                         <img
                             src={GCS_LOGO_URL}
                             alt="GCS Logo"
-                            className="h-6 w-auto opacity-80"
+                            className="h-7 w-auto shrink-0 object-contain opacity-95 transition-transform duration-500 group-hover:scale-105"
                         />
                     </div>
-                    <div className="flex flex-col">
-                        <span className={`font-black text-lg leading-none tracking-tighter ${scrolled ? 'text-[#003A78]' : 'text-white'}`}>
+                    <div className="flex flex-col justify-center">
+                        <span className="font-black text-xl leading-none tracking-tight text-gcs-900">
                             GCS
                         </span>
-                        <span className={`text-[8px] font-bold uppercase tracking-[0.2em] ${scrolled ? 'text-slate-400' : 'text-blue-200/60'}`}>
+                        <span className="text-[8px] font-bold uppercase tracking-[0.15em] text-slate-500 hidden 2xl:block whitespace-nowrap">
                             Creative Convergence Education (CCE)
                         </span>
                     </div>
                 </div>
 
                 {/* Desktop Menu */}
-                <div className="hidden lg:flex items-center gap-8">
+                <div className="hidden lg:flex items-center gap-4 xl:gap-6 2xl:gap-8">
                     {navItems.map((item) => (
                         <NavButton key={item.id} onClick={() => scrollToSection(item.id)} label={item.label} />
                     ))}
@@ -178,6 +179,12 @@ const Navbar = ({ onOpenFaculty, onOpenResources, onOpenMajors }) => {
                     <NavButton onClick={onOpenMajors} label="Majors" />
                     <NavButton onClick={onOpenFaculty} label="Faculty & Advisors" />
                     <NavButton onClick={onOpenResources} label="Resources" />
+                    <Link to="/board" className={`px-4 py-2 rounded-full font-bold transition-all text-sm uppercase tracking-wider text-slate-600 hover:text-gcs-900 hover:bg-slate-100`}>
+                        Community
+                    </Link>
+                    <Link to="/gallery" className={`px-4 py-2 rounded-full font-bold transition-all text-sm uppercase tracking-wider text-slate-600 hover:text-gcs-900 hover:bg-slate-100`}>
+                        Gallery
+                    </Link>
                 </div>
 
                 {/* Desktop Actions */}
@@ -186,19 +193,13 @@ const Navbar = ({ onOpenFaculty, onOpenResources, onOpenMajors }) => {
                         href="https://hisnet.handong.edu/"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className={`text-[11px] font-black uppercase tracking-widest px-4 py-2 rounded-lg transition-all duration-300 ${scrolled
-                            ? 'text-[#003A78] hover:bg-blue-50'
-                            : 'text-white hover:bg-white/10'
-                            }`}
+                        className={`text-[11px] font-black uppercase tracking-widest px-4 py-2 rounded-lg transition-all duration-300 text-gcs-900 hover:bg-gcs-50`}
                     >
                         HISNET
                     </a>
                     <button
                         onClick={() => scrollToSection('process')}
-                        className={`px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-[0.15em] transition-all duration-300 shadow-lg hover:shadow-blue-900/40 hover:-translate-y-0.5 active:translate-y-0 ${scrolled
-                            ? 'bg-[#003A78] text-white hover:bg-blue-800'
-                            : 'bg-white text-[#003A78] hover:bg-blue-50'
-                            }`}
+                        className={`px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-[0.15em] transition-all duration-300 shadow-lg hover:shadow-gcs-900/40 hover:-translate-y-0.5 active:translate-y-0 bg-gcs-900 text-white hover:bg-gcs-800`}
                     >
                         Apply Now
                     </button>
@@ -210,9 +211,9 @@ const Navbar = ({ onOpenFaculty, onOpenResources, onOpenMajors }) => {
                     className="lg:hidden p-2 rounded-xl transition-colors focus:outline-none"
                 >
                     {isMenuOpen ? (
-                        <X size={26} className={scrolled ? 'text-slate-900' : 'text-white'} />
+                        <X size={26} className='text-slate-900' />
                     ) : (
-                        <Menu size={26} className={scrolled ? 'text-slate-900' : 'text-white'} />
+                        <Menu size={26} className='text-slate-900' />
                     )}
                 </button>
             </div>
@@ -231,29 +232,31 @@ const Navbar = ({ onOpenFaculty, onOpenResources, onOpenMajors }) => {
                                 <button
                                     key={item.id}
                                     onClick={() => scrollToSection(item.id)}
-                                    className="text-left text-lg font-bold text-slate-800 hover:text-[#003A78] transition-colors"
+                                    className="text-left text-lg font-bold text-slate-800 hover:text-gcs-900 transition-colors"
                                 >
                                     {item.label}
                                 </button>
                             ))}
                             <div className="h-[1px] bg-slate-100" />
-                            <button onClick={onOpenMajors} className="text-left text-lg font-bold text-slate-800 hover:text-[#003A78]">Majors</button>
-                            <button onClick={onOpenFaculty} className="text-left text-lg font-bold text-slate-800 hover:text-[#003A78]">Faculty & Advisors</button>
-                            <button onClick={onOpenResources} className="text-left text-lg font-bold text-slate-800 hover:text-[#003A78]">Resources</button>
+                            <button onClick={onOpenMajors} className="text-left text-lg font-bold text-slate-800 hover:text-gcs-900">Majors</button>
+                            <button onClick={onOpenFaculty} className="text-left text-lg font-bold text-slate-800 hover:text-gcs-900">Faculty & Advisors</button>
+                            <button onClick={onOpenResources} className="text-left text-lg font-bold text-slate-800 hover:text-gcs-900">Resources</button>
+                            <Link to="/board" className="text-left text-lg font-bold text-slate-800 hover:text-gcs-900">Community (게시판)</Link>
+                            <Link to="/gallery" className="text-left text-lg font-bold text-slate-800 hover:text-gcs-900">Gallery (사진첩)</Link>
 
                             <div className="flex flex-col gap-3 mt-4">
                                 <a
                                     href="https://hisnet.handong.edu/"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="w-full py-4 text-center text-sm font-black uppercase tracking-widest text-[#003A78] bg-blue-50 rounded-2xl"
+                                    className="w-full py-4 text-center text-sm font-black uppercase tracking-widest text-gcs-900 bg-gcs-50 rounded-2xl"
                                 >
                                     HISNET
                                 </a>
                                 <div className="flex flex-col gap-1 items-center">
                                     <button
                                         onClick={() => scrollToSection('process')}
-                                        className="w-full py-4 text-center text-sm font-black uppercase tracking-widest text-white bg-[#003A78] rounded-2xl shadow-lg shadow-blue-900/20"
+                                        className="w-full py-4 text-center text-sm font-black uppercase tracking-widest text-white bg-gcs-900 rounded-2xl shadow-lg shadow-gcs-900/20"
                                     >
                                         Apply Now
                                     </button>
@@ -278,10 +281,10 @@ const AccordionItem = ({ question, answer }) => {
                 onClick={() => setIsOpen(!isOpen)}
                 className="w-full py-4 flex justify-between items-center text-left focus:outline-none group"
             >
-                <span className={`text-lg font-medium transition-colors ${isOpen ? 'text-[#003A78]' : 'text-slate-700 group-hover:text-[#003A78]'}`}>
+                <span className={`text-lg font-medium transition-colors ${isOpen ? 'text-gcs-900' : 'text-slate-700 group-hover:text-gcs-900'}`}>
                     {question}
                 </span>
-                <span className={`flex-shrink-0 ml-4 p-1 rounded-full ${isOpen ? 'bg-blue-50 text-[#003A78]' : 'text-slate-400'}`}>
+                <span className={`flex-shrink-0 ml-4 p-1 rounded-full ${isOpen ? 'bg-gcs-50 text-gcs-900' : 'text-slate-400'}`}>
                     {isOpen ? <Minus size={20} /> : <Plus size={20} />}
                 </span>
             </button>
@@ -377,7 +380,7 @@ export default function GCSPage() {
                                 <img src={faculty.image} alt={faculty.name} className="w-full h-full object-cover" />
                             </div>
                             <div className="w-full md:w-2/3">
-                                <h4 className="text-3xl font-bold text-[#003A78] mb-1">{faculty.name}</h4>
+                                <h4 className="text-3xl font-bold text-gcs-900 mb-1">{faculty.name}</h4>
                                 <p className="text-slate-500 font-medium mb-6">{faculty.koreanName}</p>
 
                                 <div className="overflow-hidden rounded-xl border border-slate-100 bg-white">
@@ -397,7 +400,7 @@ export default function GCSPage() {
                                             </tr>
                                             <tr>
                                                 <td className="px-4 py-3 font-bold text-slate-700 border-r border-slate-100">Email</td>
-                                                <td className="px-4 py-3 text-[#003A78] font-medium leading-none">{faculty.email}</td>
+                                                <td className="px-4 py-3 text-gcs-900 font-medium leading-none">{faculty.email}</td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -418,7 +421,7 @@ export default function GCSPage() {
                 title="Majors & Academic Pathways"
             >
                 <div className="p-4 text-center">
-                    <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center text-[#003A78] mx-auto mb-6">
+                    <div className="w-16 h-16 bg-gcs-50 rounded-full flex items-center justify-center text-gcs-900 mx-auto mb-6">
                         <BookOpen size={32} />
                     </div>
                     <h4 className="text-xl font-bold text-slate-800 mb-2">Design Your Custom Major</h4>
@@ -438,7 +441,7 @@ export default function GCSPage() {
                             "Visual Communication and Design",
                             "International Human Services Administration"
                         ].map((major, i) => (
-                            <div key={i} className="p-4 rounded-xl bg-slate-50 border border-slate-100 font-semibold text-[#003A78]">
+                            <div key={i} className="p-4 rounded-xl bg-slate-50 border border-slate-100 font-semibold text-gcs-900">
                                 {major}
                             </div>
                         ))}
@@ -461,7 +464,7 @@ export default function GCSPage() {
                     ].map((item, idx) => (
                         <div key={idx} className="p-4 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between group cursor-pointer hover:bg-white hover:shadow-sm transition-all">
                             <div className="flex items-center gap-4">
-                                <div className="w-10 h-10 rounded-lg bg-blue-100 text-[#003A78] flex items-center justify-center">
+                                <div className="w-10 h-10 rounded-lg bg-gcs-100 text-gcs-900 flex items-center justify-center">
                                     <item.icon size={20} />
                                 </div>
                                 <div>
@@ -469,7 +472,7 @@ export default function GCSPage() {
                                     <p className="text-xs text-slate-500">{item.desc}</p>
                                 </div>
                             </div>
-                            <ArrowRight size={18} className="text-slate-300 group-hover:text-[#003A78] transition-colors" />
+                            <ArrowRight size={18} className="text-slate-300 group-hover:text-gcs-900 transition-colors" />
                         </div>
                     ))}
                 </div>
@@ -486,7 +489,7 @@ export default function GCSPage() {
                         height='100%'
                         className="w-full h-full"
                         title="Spline 3D Scene"
-                        style={{ pointerEvents: 'all' }}
+                        style={{ pointerEvents: 'auto', filter: 'hue-rotate(-110deg) saturate(1.2)' }}
                     ></iframe>
                 </div>
 
@@ -499,10 +502,10 @@ export default function GCSPage() {
                             transition={{ duration: 1, delay: 0.5 }}
                             className="max-w-2xl"
                         >
-                            <span className="inline-block px-3 py-1 bg-blue-50/80 backdrop-blur-md text-[#003A78] rounded-full text-xs font-bold tracking-wider mb-4 border border-blue-100">
+                            <span className="inline-block px-3 py-1 bg-gcs-50/80 backdrop-blur-md text-gcs-900 rounded-full text-xs font-bold tracking-wider mb-4 border border-gcs-100">
                                 HANDONG GLOBAL UNIVERSITY
                             </span>
-                            <h1 className="text-5xl md:text-6xl font-extrabold text-[#003A78] leading-tight mb-2 tracking-tight">
+                            <h1 className="text-5xl md:text-6xl font-extrabold text-gcs-900 leading-tight mb-2 tracking-tight">
                                 Global Convergence Studies
                             </h1>
                             <p className="text-xl md:text-2xl font-bold text-slate-700/80 mb-6 leading-snug">
@@ -512,20 +515,20 @@ export default function GCSPage() {
                             <p className="text-lg text-slate-600 font-medium max-w-lg leading-relaxed mb-4">
                                 GCS is a program operated under the Creative Convergence Education (CCE) that allows you to design your own major primarily in English (with limited exceptions subject to committee approval). Expand your choices and shape your future with personalized academic pathways.
                             </p>
-                            <div className="mb-8 p-4 bg-[#003A78]/5 backdrop-blur-sm border-l-4 border-[#003A78] rounded-r-2xl">
-                                <p className="text-[#003A78] font-bold text-base">
+                            <div className="mb-8 p-4 bg-gcs-900/5 backdrop-blur-sm border-l-4 border-gcs-900 rounded-r-2xl">
+                                <p className="text-gcs-900 font-bold text-base">
                                     "The first step to joining GCS is enrolling in Vision, Work & Calling (CCE24001)."
                                 </p>
                             </div>
 
                             <div className="flex flex-col sm:flex-row gap-4 pointer-events-auto">
                                 <div className="flex flex-col gap-2">
-                                    <button onClick={() => setMajorsModalOpen(true)} className="bg-[#4B89DC] hover:bg-[#3572C6] text-white px-8 py-3 rounded-full font-bold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2">
+                                    <button onClick={() => setMajorsModalOpen(true)} className="bg-[var(--tw-colors-gcs-500)] hover:bg-[var(--tw-colors-gcs-600)] text-white px-8 py-3 rounded-full font-bold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2">
                                         Explore the GCS Curriculum <ArrowRight size={20} />
                                     </button>
                                 </div>
                                 <div className="flex flex-col gap-2">
-                                    <button onClick={() => scrollToSection('process')} className="bg-white/60 backdrop-blur-md border border-white/60 text-[#003A78] px-8 py-3 rounded-full font-bold shadow-sm hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2">
+                                    <button onClick={() => scrollToSection('process')} className="bg-white/60 backdrop-blur-md border border-white/60 text-gcs-900 px-8 py-3 rounded-full font-bold shadow-sm hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2">
                                         How to Apply <ArrowRight size={20} />
                                     </button>
                                     <span className="text-[10px] text-slate-400 font-bold ml-4 uppercase tracking-tighter">Start by taking VWC (CCE24001)</span>
@@ -547,7 +550,7 @@ export default function GCSPage() {
                 <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
                     <Section>
                         <h2 className="text-4xl font-bold text-slate-900 mb-4">
-                            Curriculum <span className="text-[#003A78]">Architecture</span>
+                            Curriculum <span className="text-gcs-900">Architecture</span>
                         </h2>
                         <p className="text-slate-500 max-w-xl text-lg">
                             A systematic approach to learning. From foundational values to professional mastery.
@@ -560,36 +563,36 @@ export default function GCSPage() {
 
                     {/* Cornerstone */}
                     <Section delay={0.1} className="bg-white p-8 rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-slate-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
-                        <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-[#003A78] mb-6">
+                        <div className="w-12 h-12 bg-gcs-50 rounded-2xl flex items-center justify-center text-gcs-900 mb-6">
                             <Layers size={24} />
                         </div>
                         <h3 className="text-2xl font-bold text-slate-800 mb-2">Cornerstone</h3>
                         <p className="text-slate-500 font-medium mb-6 text-sm uppercase tracking-wide">Foundation (10-20 Credits)</p>
                         <ul className="space-y-3 text-slate-600 mb-6">
-                            <li className="flex items-center gap-3"><CheckCircle2 size={18} className="text-[#003A78]" /> VWC Midterm Project</li>
-                            <li className="flex items-center gap-3"><CheckCircle2 size={18} className="text-[#003A78]" /> Basic Design</li>
-                            <li className="flex items-center gap-3"><CheckCircle2 size={18} className="text-[#003A78]" /> Value Formation</li>
+                            <li className="flex items-center gap-3"><CheckCircle2 size={18} className="text-gcs-900" /> VWC Midterm Project</li>
+                            <li className="flex items-center gap-3"><CheckCircle2 size={18} className="text-gcs-900" /> Basic Design</li>
+                            <li className="flex items-center gap-3"><CheckCircle2 size={18} className="text-gcs-900" /> Value Formation</li>
                         </ul>
-                        <button onClick={() => setMajorsModalOpen(true)} className="text-sm font-bold text-[#003A78] flex items-center gap-1 hover:underline">
+                        <button onClick={() => setMajorsModalOpen(true)} className="text-sm font-bold text-gcs-900 flex items-center gap-1 hover:underline">
                             View Pillar Details <ArrowRight size={14} />
                         </button>
                     </Section>
 
                     {/* Keystone (Highlighted) */}
-                    <Section delay={0.2} className="bg-[#003A78] p-8 rounded-3xl shadow-[0_15px_30px_rgba(0,58,120,0.25)] text-white relative overflow-hidden md:-mt-8 md:mb-8 md:scale-105 z-10 flex flex-col justify-between transform transition-all hover:scale-110 duration-300">
+                    <Section delay={0.2} className="bg-gcs-900 p-8 rounded-3xl shadow-[0_15px_30px_rgba(0,58,120,0.25)] text-white relative overflow-hidden md:-mt-8 md:mb-8 md:scale-105 z-10 flex flex-col justify-between transform transition-all hover:scale-110 duration-300">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
                         <div>
                             <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-white mb-6">
                                 <BookOpen size={24} />
                             </div>
                             <h3 className="text-2xl font-bold mb-2">Keystone</h3>
-                            <p className="text-blue-200 font-medium mb-6 text-sm uppercase tracking-wide">Core Competency</p>
-                            <ul className="space-y-3 text-blue-50">
-                                <li className="flex items-center gap-3"><div className="w-1.5 h-1.5 bg-blue-300 rounded-full" /> Advanced Major Courses</li>
-                                <li className="flex items-center gap-3"><div className="w-1.5 h-1.5 bg-blue-300 rounded-full" /> English Lecture Mix</li>
-                                <li className="flex items-center gap-3"><div className="w-1.5 h-1.5 bg-blue-300 rounded-full" /> Interdisciplinary Study</li>
+                            <p className="text-gcs-200 font-medium mb-6 text-sm uppercase tracking-wide">Core Competency</p>
+                            <ul className="space-y-3 text-gcs-50">
+                                <li className="flex items-center gap-3"><div className="w-1.5 h-1.5 bg-gcs-300 rounded-full" /> Advanced Major Courses</li>
+                                <li className="flex items-center gap-3"><div className="w-1.5 h-1.5 bg-gcs-300 rounded-full" /> English Lecture Mix</li>
+                                <li className="flex items-center gap-3"><div className="w-1.5 h-1.5 bg-gcs-300 rounded-full" /> Interdisciplinary Study</li>
                             </ul>
-                            <button onClick={() => setMajorsModalOpen(true)} className="mt-8 text-sm font-bold text-blue-200 flex items-center gap-1 hover:text-white transition-colors">
+                            <button onClick={() => setMajorsModalOpen(true)} className="mt-8 text-sm font-bold text-gcs-200 flex items-center gap-1 hover:text-white transition-colors">
                                 View Major Examples <ArrowRight size={14} />
                             </button>
                         </div>
@@ -598,17 +601,17 @@ export default function GCSPage() {
                     {/* Capstone */}
                     <Section delay={0.3} className="bg-white p-8 rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-slate-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between">
                         <div>
-                            <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-[#003A78] mb-6">
+                            <div className="w-12 h-12 bg-gcs-50 rounded-2xl flex items-center justify-center text-gcs-900 mb-6">
                                 <Award size={24} />
                             </div>
                             <h3 className="text-2xl font-bold text-slate-800 mb-2">Capstone</h3>
                             <p className="text-slate-500 font-medium mb-6 text-sm uppercase tracking-wide">Completion (30-40 Credits)</p>
                             <ul className="space-y-3 text-slate-600 mb-6">
-                                <li className="flex items-center gap-3"><CheckCircle2 size={18} className="text-[#003A78]" /> FIT (Required)</li>
-                                <li className="flex items-center gap-3"><CheckCircle2 size={18} className="text-[#003A78]" /> Major Seminar 1 & 2</li>
-                                <li className="flex items-center gap-3"><CheckCircle2 size={18} className="text-[#003A78]" /> Graduation Project</li>
+                                <li className="flex items-center gap-3"><CheckCircle2 size={18} className="text-gcs-900" /> FIT (Required)</li>
+                                <li className="flex items-center gap-3"><CheckCircle2 size={18} className="text-gcs-900" /> Major Seminar 1 & 2</li>
+                                <li className="flex items-center gap-3"><CheckCircle2 size={18} className="text-gcs-900" /> Graduation Project</li>
                             </ul>
-                            <button onClick={() => setMajorsModalOpen(true)} className="text-sm font-bold text-[#003A78] flex items-center gap-1 hover:underline">
+                            <button onClick={() => setMajorsModalOpen(true)} className="text-sm font-bold text-gcs-900 flex items-center gap-1 hover:underline">
                                 View FIT Details <ArrowRight size={14} />
                             </button>
                         </div>
@@ -638,8 +641,8 @@ export default function GCSPage() {
                                 { step: "05", title: "Approval", desc: "Official GCS Entry" },
                             ].map((item, index) => (
                                 <Section key={index} delay={index * 0.1} className="group flex flex-col items-center">
-                                    <div className="bg-white border border-slate-100 p-6 rounded-2xl text-center shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 hover:border-blue-200 cursor-default w-full">
-                                        <div className="w-10 h-10 mx-auto bg-slate-50 text-[#003A78] rounded-full flex items-center justify-center font-bold mb-4 group-hover:bg-[#003A78] group-hover:text-white transition-colors">
+                                    <div className="bg-white border border-slate-100 p-6 rounded-2xl text-center shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 hover:border-gcs-200 cursor-default w-full">
+                                        <div className="w-10 h-10 mx-auto bg-slate-50 text-gcs-900 rounded-full flex items-center justify-center font-bold mb-4 group-hover:bg-gcs-900 group-hover:text-white transition-colors">
                                             {item.step}
                                         </div>
                                         <h4 className="font-bold text-slate-900 mb-1 leading-tight">{item.title}</h4>
@@ -649,7 +652,7 @@ export default function GCSPage() {
                                         <motion.div
                                             initial={{ opacity: 0 }}
                                             animate={{ opacity: 1 }}
-                                            className="mt-4 text-[10px] font-black text-[#003A78] uppercase tracking-widest bg-blue-50 px-3 py-1 rounded-full border border-blue-100"
+                                            className="mt-4 text-[10px] font-black text-gcs-900 uppercase tracking-widest bg-gcs-50 px-3 py-1 rounded-full border border-gcs-100"
                                         >
                                             Mandatory First Step
                                         </motion.div>
@@ -677,22 +680,22 @@ export default function GCSPage() {
                     <Section>
                         <h2 className="text-4xl font-extrabold text-slate-900 mb-6 leading-tight">
                             Academic <br />
-                            <span className="text-[#003A78]">Requirements</span>
+                            <span className="text-gcs-900">Requirements</span>
                         </h2>
                         <p className="text-slate-600 text-lg mb-8 leading-relaxed">
                             GCS operates under the CCE. The BA/BS degree type is determined by the academic structure of your designed major and committee approval, rather than student preference alone.
                         </p>
 
                         <div className="flex flex-col gap-4">
-                            <div className="flex items-start gap-4 p-4 bg-white rounded-2xl shadow-sm border border-slate-100 hover:bg-blue-50/50 transition-colors">
-                                <Globe className="text-[#003A78] mt-1" />
+                            <div className="flex items-start gap-4 p-4 bg-white rounded-2xl shadow-sm border border-slate-100 hover:bg-gcs-50/50 transition-colors">
+                                <Globe className="text-gcs-900 mt-1" />
                                 <div>
                                     <h4 className="font-bold text-slate-800">Global Exchange</h4>
                                     <p className="text-sm text-slate-500">Credits earned abroad are recognized.</p>
                                 </div>
                             </div>
-                            <div className="flex items-start gap-4 p-4 bg-white rounded-2xl shadow-sm border border-slate-100 hover:bg-blue-50/50 transition-colors">
-                                <FileText className="text-[#003A78] mt-1" />
+                            <div className="flex items-start gap-4 p-4 bg-white rounded-2xl shadow-sm border border-slate-100 hover:bg-gcs-50/50 transition-colors">
+                                <FileText className="text-gcs-900 mt-1" />
                                 <div>
                                     <h4 className="font-bold text-slate-800">MOOC Credits</h4>
                                     <p className="text-sm text-slate-500">Selected online courses accepted.</p>
@@ -702,7 +705,7 @@ export default function GCSPage() {
 
                         <div className="mt-8 flex flex-col gap-4">
                             <GCHelper text="The path to GCS entry: Enrolling in VWC → Midterm Application → Committee Review → Approval." />
-                            <div className="p-4 bg-blue-50 rounded-2xl border border-blue-100 text-xs text-[#003A78] font-bold leading-relaxed">
+                            <div className="p-4 bg-gcs-50 rounded-2xl border border-gcs-100 text-xs text-gcs-900 font-bold leading-relaxed">
                                 Getting Started: The first step to joining GCS is enrolling in Vision, Work & Calling (CCE24001). You must complete this course before submitting a GCS application.
                             </div>
                             <div className="p-4 bg-amber-50 rounded-2xl border border-amber-100 text-xs text-amber-800 leading-relaxed">
@@ -725,7 +728,7 @@ export default function GCSPage() {
                             <p className="text-slate-500 mt-4 text-sm">Requires <strong>33 credits</strong> from your self-designed GCS course pool. Perfect for interdisciplinary studies.</p>
                         </Section>
 
-                        <Section delay={0.4} className="bg-gradient-to-br from-[#003A78] to-[#002855] p-8 rounded-3xl shadow-[0_15px_30px_rgba(0,58,120,0.25)] border-l-4 border-l-blue-400 text-white relative overflow-hidden">
+                        <Section delay={0.4} className="bg-gradient-to-br from-gcs-900 to-gcs-950 p-8 rounded-3xl shadow-[0_15px_30px_rgba(0,58,120,0.25)] border-l-4 border-l-gcs-400 text-white relative overflow-hidden">
                             <div className="absolute right-0 bottom-0 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
                             <div className="relative z-10 flex justify-between items-start">
                                 <div>
@@ -734,7 +737,7 @@ export default function GCSPage() {
                                 </div>
                                 <span className="text-4xl font-black text-white/30">66</span>
                             </div>
-                            <p className="text-blue-100 mt-4 text-sm relative z-10">Requires <strong>66 credits</strong> from your pool. For students seeking deep expertise in their self-designed field.</p>
+                            <p className="text-gcs-100 mt-4 text-sm relative z-10">Requires <strong>66 credits</strong> from your pool. For students seeking deep expertise in their self-designed field.</p>
                         </Section>
                     </div>
                 </div>
@@ -840,18 +843,18 @@ export default function GCSPage() {
                         <div>
                             <h4 className="font-bold text-slate-800 mb-4">Quick Links</h4>
                             <ul className="space-y-2 text-slate-500 text-sm">
-                                <li><a href="#" className="hover:text-[#003A78] transition-colors">Academic Calendar</a></li>
-                                <li><a href="#" className="hover:text-[#003A78] transition-colors">Course Handbook</a></li>
-                                <li><a href="#" className="hover:text-[#003A78] transition-colors">Scholarship Info</a></li>
-                                <li><button onClick={() => setFacultyModalOpen(true)} className="hover:text-[#003A78] transition-colors text-left focus:outline-none">Contact Us</button></li>
+                                <li><a href="#" className="hover:text-gcs-900 transition-colors">Academic Calendar</a></li>
+                                <li><a href="#" className="hover:text-gcs-900 transition-colors">Course Handbook</a></li>
+                                <li><a href="#" className="hover:text-gcs-900 transition-colors">Scholarship Info</a></li>
+                                <li><button onClick={() => setFacultyModalOpen(true)} className="hover:text-gcs-900 transition-colors text-left focus:outline-none">Contact Us</button></li>
                             </ul>
                         </div>
 
                         <div>
                             <h4 className="font-bold text-slate-800 mb-4">Legal</h4>
                             <ul className="space-y-2 text-slate-500 text-sm">
-                                <li><a href="#" className="hover:text-[#003A78] transition-colors">Privacy Policy</a></li>
-                                <li><a href="#" className="hover:text-[#003A78] transition-colors">Terms of Service</a></li>
+                                <li><a href="#" className="hover:text-gcs-900 transition-colors">Privacy Policy</a></li>
+                                <li><a href="#" className="hover:text-gcs-900 transition-colors">Terms of Service</a></li>
                             </ul>
                         </div>
 
@@ -895,7 +898,7 @@ export default function GCSPage() {
                                 className="w-full h-full object-cover"
                             />
                             <div
-                                className="absolute inset-0 bg-[#003A78]/70 backdrop-blur-sm cursor-pointer"
+                                className="absolute inset-0 bg-gcs-900/70 backdrop-blur-sm cursor-pointer"
                                 onClick={() => setIsQuotePopupOpen(false)}
                             />
                         </motion.div>
@@ -923,7 +926,7 @@ export default function GCSPage() {
                                 </span>
                                 <button
                                     onClick={() => setIsQuotePopupOpen(false)}
-                                    className="mt-8 px-10 py-4 bg-white text-[#003A78] rounded-full font-black text-xs uppercase tracking-widest hover:bg-blue-50 transition-colors shadow-2xl flex items-center gap-2 group"
+                                    className="mt-8 px-10 py-4 bg-white text-gcs-900 rounded-full font-black text-xs uppercase tracking-widest hover:bg-gcs-50 transition-colors shadow-2xl flex items-center gap-2 group"
                                 >
                                     Inspiring <X size={16} className="transition-transform group-hover:rotate-90" />
                                 </button>
