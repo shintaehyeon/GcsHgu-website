@@ -94,7 +94,7 @@ const GCHelper = ({ text, position = "left" }) => (
 );
 
 // 3. Navigation Bar
-const Navbar = ({ onOpenFaculty, onOpenResources, onOpenMajors }) => {
+const Navbar = ({ onOpenFaculty, onOpenResources, onOpenMajors, language, toggleLanguage }) => {
     const [scrolled, setScrolled] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const navigate = useNavigate();
@@ -118,7 +118,12 @@ const Navbar = ({ onOpenFaculty, onOpenResources, onOpenMajors }) => {
         }
     };
 
-    const navItems = [
+    const navItems = language === "ko" ? [
+        { label: '교육과정', id: 'curriculum' },
+        { label: '지원방법', id: 'process' },
+        { label: '지원자격', id: 'requirements' },
+        { label: 'GCS 소개', id: 'why-gcs' }
+    ] : [
         { label: 'Curriculum', id: 'curriculum' },
         { label: 'Process', id: 'process' },
         { label: 'Requirements', id: 'requirements' },
@@ -128,9 +133,9 @@ const Navbar = ({ onOpenFaculty, onOpenResources, onOpenMajors }) => {
     const NavButton = ({ onClick, label, id }) => (
         <button
             onClick={onClick}
-            className="relative group py-2 focus:outline-none"
+            className="relative group py-2 focus:outline-none shrink-0"
         >
-            <span className={`uppercase tracking-widest text-[11px] font-medium transition-all duration-300 group-hover:font-extrabold text-slate-700 hover:text-gcs-900`}>
+            <span className={`uppercase tracking-widest text-[11px] font-medium transition-all duration-300 group-hover:font-extrabold text-slate-700 hover:text-gcs-900 whitespace-nowrap`}>
                 {label}
             </span>
             <motion.span
@@ -141,7 +146,7 @@ const Navbar = ({ onOpenFaculty, onOpenResources, onOpenMajors }) => {
 
     return (
         <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 ${scrolled ? 'bg-white/80 backdrop-blur-xl shadow-lg py-3' : 'bg-transparent py-6'}`}>
-            <div className="max-w-7xl mx-auto px-6 flex justify-between items-center gap-6 xl:gap-8">
+            <div className="max-w-7xl mx-auto px-6 flex justify-between items-center gap-3 xl:gap-6">
                 {/* Logo & Title */}
                 <div
                     className="flex items-center gap-3.5 cursor-pointer group shrink-0"
@@ -171,37 +176,45 @@ const Navbar = ({ onOpenFaculty, onOpenResources, onOpenMajors }) => {
                 </div>
 
                 {/* Desktop Menu */}
-                <div className="hidden lg:flex items-center gap-4 xl:gap-6 2xl:gap-8">
+                <div className="hidden lg:flex items-center gap-2 xl:gap-4 2xl:gap-6 shrink-0">
                     {navItems.map((item) => (
                         <NavButton key={item.id} onClick={() => scrollToSection(item.id)} label={item.label} />
                     ))}
-                    <div className={`w-[1px] h-4 ${scrolled ? 'bg-slate-200' : 'bg-white/20'}`} />
-                    <NavButton onClick={onOpenMajors} label="Majors" />
-                    <NavButton onClick={onOpenFaculty} label="Faculty & Advisors" />
-                    <NavButton onClick={onOpenResources} label="Resources" />
-                    <Link to="/board" className={`px-4 py-2 rounded-full font-bold transition-all text-sm uppercase tracking-wider text-slate-600 hover:text-gcs-900 hover:bg-slate-100`}>
-                        Community
+                    <div className={`w-[1px] h-4 shrink-0 ${scrolled ? 'bg-slate-200' : 'bg-white/20'}`} />
+                    <NavButton onClick={onOpenMajors} label={language === "ko" ? "설계전공" : "Majors"} />
+                    <NavButton onClick={onOpenFaculty} label={language === "ko" ? "교수진" : "Faculty"} />
+                    <NavButton onClick={onOpenResources} label={language === "ko" ? "자료실" : "Resources"} />
+                    <Link to="/board" className={`px-3 py-2 rounded-full font-bold transition-all text-sm uppercase tracking-wider text-slate-600 hover:text-gcs-900 hover:bg-slate-100 whitespace-nowrap shrink-0`}>
+                        {language === "ko" ? "커뮤니티" : "Community"}
                     </Link>
-                    <Link to="/gallery" className={`px-4 py-2 rounded-full font-bold transition-all text-sm uppercase tracking-wider text-slate-600 hover:text-gcs-900 hover:bg-slate-100`}>
-                        Gallery
+                    <Link to="/gallery" className={`px-3 py-2 rounded-full font-bold transition-all text-sm uppercase tracking-wider text-slate-600 hover:text-gcs-900 hover:bg-slate-100 whitespace-nowrap shrink-0`}>
+                        {language === "ko" ? "사진첩" : "Gallery"}
                     </Link>
                 </div>
 
                 {/* Desktop Actions */}
-                <div className="hidden lg:flex items-center gap-4">
+                <div className="hidden lg:flex items-center gap-2.5 xl:gap-3 shrink-0">
+                    <button
+                        onClick={toggleLanguage}
+                        className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest px-3 py-2 rounded-lg transition-all duration-300 text-slate-600 hover:bg-slate-100 hover:text-gcs-900 whitespace-nowrap shrink-0"
+                        title={language === "en" ? "한국어로 변환" : "Switch to English"}
+                    >
+                        <Globe size={13} />
+                        {language === "en" ? "KO" : "EN"}
+                    </button>
                     <a
                         href="https://hisnet.handong.edu/"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className={`text-[11px] font-black uppercase tracking-widest px-4 py-2 rounded-lg transition-all duration-300 text-gcs-900 hover:bg-gcs-50`}
+                        className={`text-[11px] font-black uppercase tracking-widest px-4 py-2 rounded-lg transition-all duration-300 text-gcs-900 hover:bg-gcs-50 whitespace-nowrap shrink-0`}
                     >
-                        HISNET
+                        {language === "ko" ? "히즈넷" : "HISNET"}
                     </a>
                     <button
                         onClick={() => scrollToSection('process')}
-                        className={`px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-[0.15em] transition-all duration-300 shadow-lg hover:shadow-gcs-900/40 hover:-translate-y-0.5 active:translate-y-0 bg-gcs-900 text-white hover:bg-gcs-800`}
+                        className={`px-5 py-2.5 rounded-full text-[10px] font-black uppercase tracking-[0.15em] transition-all duration-300 shadow-lg hover:shadow-gcs-900/40 hover:-translate-y-0.5 active:translate-y-0 bg-gcs-900 text-white hover:bg-gcs-800 whitespace-nowrap shrink-0`}
                     >
-                        Apply Now
+                        {language === "ko" ? "신청하기" : "Apply Now"}
                     </button>
                 </div>
 
@@ -238,29 +251,37 @@ const Navbar = ({ onOpenFaculty, onOpenResources, onOpenMajors }) => {
                                 </button>
                             ))}
                             <div className="h-[1px] bg-slate-100" />
-                            <button onClick={onOpenMajors} className="text-left text-lg font-bold text-slate-800 hover:text-gcs-900">Majors</button>
-                            <button onClick={onOpenFaculty} className="text-left text-lg font-bold text-slate-800 hover:text-gcs-900">Faculty & Advisors</button>
-                            <button onClick={onOpenResources} className="text-left text-lg font-bold text-slate-800 hover:text-gcs-900">Resources</button>
-                            <Link to="/board" className="text-left text-lg font-bold text-slate-800 hover:text-gcs-900">Community (게시판)</Link>
-                            <Link to="/gallery" className="text-left text-lg font-bold text-slate-800 hover:text-gcs-900">Gallery (사진첩)</Link>
+                            <button onClick={onOpenMajors} className="text-left text-lg font-bold text-slate-800 hover:text-gcs-900">{language === "ko" ? "설계전공" : "Majors"}</button>
+                            <button onClick={onOpenFaculty} className="text-left text-lg font-bold text-slate-800 hover:text-gcs-900">{language === "ko" ? "교수진" : "Faculty & Advisors"}</button>
+                            <button onClick={onOpenResources} className="text-left text-lg font-bold text-slate-800 hover:text-gcs-900">{language === "ko" ? "자료실" : "Resources"}</button>
+                            <Link to="/board" className="text-left text-lg font-bold text-slate-800 hover:text-gcs-900">{language === "ko" ? "커뮤니티" : "Community (게시판)"}</Link>
+                            <Link to="/gallery" className="text-left text-lg font-bold text-slate-800 hover:text-gcs-900">{language === "ko" ? "사진첩" : "Gallery (사진첩)"}</Link>
 
                             <div className="flex flex-col gap-3 mt-4">
+                                <button
+                                    onClick={toggleLanguage}
+                                    className="w-full py-4 text-center text-sm font-black uppercase tracking-widest text-slate-700 bg-slate-100 rounded-2xl flex items-center justify-center gap-2"
+                                >
+                                    <Globe size={16} /> {language === "en" ? "한국어로 번역 (KO)" : "Switch to English (EN)"}
+                                </button>
                                 <a
                                     href="https://hisnet.handong.edu/"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="w-full py-4 text-center text-sm font-black uppercase tracking-widest text-gcs-900 bg-gcs-50 rounded-2xl"
                                 >
-                                    HISNET
+                                    {language === "ko" ? "히즈넷" : "HISNET"}
                                 </a>
                                 <div className="flex flex-col gap-1 items-center">
                                     <button
                                         onClick={() => scrollToSection('process')}
                                         className="w-full py-4 text-center text-sm font-black uppercase tracking-widest text-white bg-gcs-900 rounded-2xl shadow-lg shadow-gcs-900/20"
                                     >
-                                        Apply Now
+                                        {language === "ko" ? "지금 신청하기" : "Apply Now"}
                                     </button>
-                                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">Start by taking VWC (CCE24001)</span>
+                                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">
+                                        {language === "ko" ? "VWC (CCE24001) 수강부터 시작해보세요" : "Start by taking VWC (CCE24001)"}
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -314,6 +335,13 @@ export default function GCSPage() {
     const [majorsModalOpen, setMajorsModalOpen] = useState(false);
     const [easterEggQuote, setEasterEggQuote] = useState("");
     const [isQuotePopupOpen, setIsQuotePopupOpen] = useState(false);
+    const [language, setLanguage] = useState(() => localStorage.getItem("lang") || "en");
+
+    const toggleLanguage = () => {
+        const nextLang = language === "en" ? "ko" : "en";
+        setLanguage(nextLang);
+        localStorage.setItem("lang", nextLang);
+    };
 
     const quotes = [
         "Your vision is the only limit to what you can create.",
@@ -332,7 +360,7 @@ export default function GCSPage() {
     const facultyList = [
         {
             name: "Prof. Scott Lincoln",
-            koreanName: "스캇 링컨",
+            koreanName: "스캇 링컨 교수",
             major: "Ph.D. in Organizational Leadership, Regent University",
             office: "Nehemiah Hall, Room 112",
             phone: "054-260-1298",
@@ -341,7 +369,7 @@ export default function GCSPage() {
         },
         {
             name: "Prof. Jenny Kim",
-            koreanName: "제니 김",
+            koreanName: "제니 김 교수",
             major: "Ed.D, University of Southern California",
             office: "Oseok Hall, Room 421B",
             phone: "054-260-1506",
@@ -350,8 +378,8 @@ export default function GCSPage() {
         },
         {
             name: "Prof. Bryan Alkema",
-            koreanName: "브라이언 알케마",
-            major: "M.A. Applied Linguistics, University of Southern Queensland",
+            koreanName: "브라이언 알케마 교수 (학부장)",
+            major: "Master of Science in Technology and Policy, Massachusetts Institute of Technology (MIT)",
             office: "GLC, Room 208",
             phone: "054-260-1345",
             email: "bryan@handong.edu",
@@ -365,6 +393,8 @@ export default function GCSPage() {
                 onOpenFaculty={() => setFacultyModalOpen(true)}
                 onOpenResources={() => setResourcesModalOpen(true)}
                 onOpenMajors={() => setMajorsModalOpen(true)}
+                language={language}
+                toggleLanguage={toggleLanguage}
             />
 
             {/* Faculty Modal */}
@@ -481,20 +511,20 @@ export default function GCSPage() {
             {/* --- HERO SECTION with SPLINE --- */}
             <header className="relative w-full h-[90vh] bg-white overflow-hidden">
                 {/* Spline Iframe - ABSOLUTELY PRESERVED */}
-                <div className="absolute inset-0 z-0">
+                <div className="absolute inset-y-0 right-0 w-full lg:w-[60%] z-0 pointer-events-none lg:pointer-events-auto">
                     <iframe
                         src='https://my.spline.design/interactiveaiwebsite-tHNt62SRB9B2Qjud5JFSviT3/'
                         frameBorder='0'
                         width='100%'
                         height='100%'
-                        className="w-full h-full"
+                        className="w-full h-full pointer-events-none lg:pointer-events-auto"
                         title="Spline 3D Scene"
-                        style={{ pointerEvents: 'auto', filter: 'hue-rotate(-110deg) saturate(1.2)' }}
+                        style={{ filter: 'hue-rotate(-110deg) saturate(1.2)' }}
                     ></iframe>
                 </div>
 
                 {/* Hero Overlay Text */}
-                <div className="absolute top-1/3 left-0 w-full z-10 pointer-events-none px-6">
+                <div className="absolute top-[12%] lg:top-[16%] left-0 w-full z-10 pointer-events-none px-6">
                     <div className="max-w-7xl mx-auto">
                         <motion.div
                             initial={{ opacity: 0, x: -30 }}
@@ -503,35 +533,42 @@ export default function GCSPage() {
                             className="max-w-2xl"
                         >
                             <span className="inline-block px-3 py-1 bg-gcs-50/80 backdrop-blur-md text-gcs-900 rounded-full text-xs font-bold tracking-wider mb-4 border border-gcs-100">
-                                HANDONG GLOBAL UNIVERSITY
+                                {language === "ko" ? "한동대학교" : "HANDONG GLOBAL UNIVERSITY"}
                             </span>
                             <h1 className="text-5xl md:text-6xl font-extrabold text-gcs-900 leading-tight mb-2 tracking-tight">
-                                Global Convergence Studies
+                                {language === "ko" ? "글로벌융합학부 (GCS)" : "Global Convergence Studies"}
                             </h1>
                             <p className="text-xl md:text-2xl font-bold text-slate-700/80 mb-6 leading-snug">
-                                Design Your Own Major. <br />
-                                Shape Your Own Future.
+                                {language === "ko" ? "나만의 전공을 설계하고, 나만의 미래를 디자인하세요." : "Design Your Own Major. Shape Your Own Future."}
                             </p>
                             <p className="text-lg text-slate-600 font-medium max-w-lg leading-relaxed mb-4">
-                                GCS is a program operated under the Creative Convergence Education (CCE) that allows you to design your own major primarily in English (with limited exceptions subject to committee approval). Expand your choices and shape your future with personalized academic pathways.
+                                {language === "ko" ?
+                                    "GCS는 창의융합교육원(CCE) 소속으로 운영되는 자기설계전공 프로그램입니다. 주로 영어로 운영되는 교과과정을 통해 학생 스스로 학업 방향을 주도적으로 설계하고 융합할 수 있도록 폭넓은 선택권을 제공합니다." :
+                                    "GCS is a program operated under the Creative Convergence Education (CCE) that allows you to design your own major primarily in English (with limited exceptions subject to committee approval). Expand your choices and shape your future with personalized academic pathways."
+                                }
                             </p>
                             <div className="mb-8 p-4 bg-gcs-900/5 backdrop-blur-sm border-l-4 border-gcs-900 rounded-r-2xl">
                                 <p className="text-gcs-900 font-bold text-base">
-                                    "The first step to joining GCS is enrolling in Vision, Work & Calling (CCE24001)."
+                                    {language === "ko" ?
+                                        "“GCS 참여를 위한 첫 단추는 '비전과 일, 그리고 소명(VWC / CCE24001)' 과목 이수입니다.”" :
+                                        "\"The first step to joining GCS is enrolling in Vision, Work & Calling (CCE24001).\""
+                                    }
                                 </p>
                             </div>
 
                             <div className="flex flex-col sm:flex-row gap-4 pointer-events-auto">
                                 <div className="flex flex-col gap-2">
-                                    <button onClick={() => setMajorsModalOpen(true)} className="bg-[var(--tw-colors-gcs-500)] hover:bg-[var(--tw-colors-gcs-600)] text-white px-8 py-3 rounded-full font-bold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2">
-                                        Explore the GCS Curriculum <ArrowRight size={20} />
+                                    <button onClick={() => setMajorsModalOpen(true)} className="bg-gcs-900 hover:bg-gcs-800 text-white px-8 py-3 rounded-full font-bold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2">
+                                        {language === "ko" ? "GCS 교육과정 탐색" : "Explore the GCS Curriculum"} <ArrowRight size={20} />
                                     </button>
                                 </div>
                                 <div className="flex flex-col gap-2">
                                     <button onClick={() => scrollToSection('process')} className="bg-white/60 backdrop-blur-md border border-white/60 text-gcs-900 px-8 py-3 rounded-full font-bold shadow-sm hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2">
-                                        How to Apply <ArrowRight size={20} />
+                                        {language === "ko" ? "지원 방법" : "How to Apply"} <ArrowRight size={20} />
                                     </button>
-                                    <span className="text-[10px] text-slate-400 font-bold ml-4 uppercase tracking-tighter">Start by taking VWC (CCE24001)</span>
+                                    <span className="text-[10px] text-slate-400 font-bold ml-4 uppercase tracking-tighter">
+                                        {language === "ko" ? "VWC(CCE24001) 수강부터 시작해보세요" : "Start by taking VWC (CCE24001)"}
+                                    </span>
                                 </div>
                             </div>
                         </motion.div>
