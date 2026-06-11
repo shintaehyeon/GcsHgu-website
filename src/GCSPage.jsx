@@ -511,15 +511,15 @@ export default function GCSPage() {
             {/* --- HERO SECTION with SPLINE --- */}
             <header className="relative w-full h-[90vh] bg-white overflow-hidden">
                 {/* Spline Iframe - ABSOLUTELY PRESERVED */}
-                <div className="absolute inset-y-0 right-0 w-full lg:w-[60%] z-0 pointer-events-none">
+                <div className="absolute inset-y-0 right-0 w-full lg:w-[60%] z-0 pointer-events-none" style={{ pointerEvents: 'none' }}>
                     <iframe
                         src='https://my.spline.design/interactiveaiwebsite-tHNt62SRB9B2Qjud5JFSviT3/'
                         frameBorder='0'
                         width='100%'
                         height='100%'
-                        className="w-full h-full pointer-events-none"
+                        className="w-full h-full"
                         title="Spline 3D Scene"
-                        style={{ filter: 'hue-rotate(-110deg) saturate(1.2)' }}
+                        style={{ pointerEvents: 'none', filter: 'hue-rotate(-110deg) saturate(1.2)' }}
                     ></iframe>
                 </div>
 
