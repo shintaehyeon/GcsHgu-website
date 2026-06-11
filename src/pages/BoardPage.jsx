@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { FileText, Download, PlusCircle, ArrowLeft, X, MessageSquare, CornerDownRight } from "lucide-react";
+import { FileText, Download, PlusCircle, ArrowLeft, X, MessageSquare, CornerDownRight, Trash2 } from "lucide-react";
 import { supabase } from "../supabase";
 
 export default function BoardPage() {
@@ -23,6 +23,7 @@ export default function BoardPage() {
   const [isWriteModalOpen, setIsWriteModalOpen] = useState(false);
   const [newTitle, setNewTitle] = useState("");
   const [newContent, setNewContent] = useState("");
+  const [newPassword, setNewPassword] = useState("");
   const [uploading, setUploading] = useState(false);
 
   // Detail Modal & Comments States
@@ -113,16 +114,21 @@ export default function BoardPage() {
       alert("제목과 내용을 모두 입력해주세요.");
       return;
     }
+    if (!newPassword.trim()) {
+      alert("글 삭제 시 본인 인증에 필요한 비밀번호를 입력해주세요.");
+      return;
+    }
 
     setUploading(true);
     try {
-      // Insert post row (text-only)
+      // Insert post row with password
       const { error: insertError } = await supabase.from("posts").insert([
         {
           title: newTitle,
           content: newContent,
           author_name: currentUser.name || currentUser.email.split("@")[0],
           author_email: currentUser.email,
+          password: newPassword.trim(),
         },
       ]);
 
@@ -133,6 +139,7 @@ export default function BoardPage() {
       // Reset Form and refresh
       setNewTitle("");
       setNewContent("");
+      setNewPassword("");
       setIsWriteModalOpen(false);
       fetchData();
     } catch (error) {
@@ -148,6 +155,52 @@ export default function BoardPage() {
     if (!isNotice) {
       setComments([]);
       fetchComments(post.id);
+    }
+  };
+
+  const handleDeletePost = async () => {
+    const confirmDelete = window.confirm("이 게시글을 정말로 삭제하시겠습니까?");
+    if (!confirmDelete) return;
+
+    if (currentUser.role === "admin") {
+      // Admin master privilege override (no password needed)
+      try {
+        const table = selectedPost.isNotice ? "notices" : "posts";
+        const { error } = await supabase
+          .from(table)
+          .delete()
+          .eq("id", selectedPost.id);
+
+        if (error) throw error;
+        alert("관리자 권한으로 게시글이 정상 삭제되었습니다.");
+        setIsDetailModalOpen(false);
+        fetchData();
+      } catch (error) {
+        alert("삭제 중 오류가 발생했습니다: " + error.message);
+      }
+    } else {
+      // Student password authentication
+      const passwordInput = window.prompt("본인 게시글 확인을 위해 비밀번호를 입력해 주세요:");
+      if (passwordInput === null) return; // Cancelled
+
+      if (passwordInput !== selectedPost.password) {
+        alert("비밀번호가 올바르지 않습니다. 본인이 작성한 글만 삭제할 수 있습니다.");
+        return;
+      }
+
+      try {
+        const { error } = await supabase
+          .from("posts")
+          .delete()
+          .eq("id", selectedPost.id);
+
+        if (error) throw error;
+        alert("게시글이 성공적으로 삭제되었습니다.");
+        setIsDetailModalOpen(false);
+        fetchData();
+      } catch (error) {
+        alert("삭제 실패: " + error.message);
+      }
     }
   };
 
@@ -302,7 +355,7 @@ export default function BoardPage() {
         </div>
       </div>
 
-      {/* Write Modal (Text-Only for Students) */}
+      {/* Write Modal (Text-Only for Students, With Password Field) */}
       {isWriteModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
           <div className="bg-white rounded-2xl w-full max-w-xl shadow-2xl border border-slate-100 flex flex-col overflow-hidden">
@@ -335,8 +388,20 @@ export default function BoardPage() {
                   onChange={(e) => setNewContent(e.target.value)}
                   placeholder="자유게시판은 깨끗한 커뮤니티 조성을 위해 텍스트 전용으로 운영됩니다." 
                   required
-                  rows={8}
+                  rows={6}
                   className="w-full text-sm border border-slate-200 focus:border-gcs-600 focus:ring-1 focus:ring-gcs-600 rounded-lg p-2.5 outline-none transition-colors resize-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-600 mb-1.5">글 삭제 비밀번호</label>
+                <input 
+                  type="password" 
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="본인 게시물 확인을 위한 비밀번호를 설정해주세요 (영문/숫자)" 
+                  required
+                  className="w-full text-sm border border-slate-200 focus:border-gcs-600 focus:ring-1 focus:ring-gcs-600 rounded-lg p-2.5 outline-none transition-colors"
                 />
               </div>
 
@@ -372,9 +437,21 @@ export default function BoardPage() {
               <span className="text-xs font-bold bg-gcs-900 text-white px-2 py-0.5 rounded">
                 {selectedPost.isNotice ? "공지사항" : "자유게시글"}
               </span>
-              <button onClick={() => setIsDetailModalOpen(false)} className="p-1 rounded-full hover:bg-slate-200 transition-colors">
-                <X size={18} className="text-slate-500" />
-              </button>
+              <div className="flex items-center gap-2">
+                {/* Delete button (Requires admin role or matches post password for students) */}
+                {currentUser && (
+                  <button 
+                    onClick={handleDeletePost}
+                    className="text-red-500 hover:text-red-700 hover:bg-red-50 p-1.5 rounded-lg transition-colors flex items-center gap-1 font-bold text-xs"
+                    title="게시글 삭제"
+                  >
+                    <Trash2 size={14} /> 삭제
+                  </button>
+                )}
+                <button onClick={() => setIsDetailModalOpen(false)} className="p-1 rounded-full hover:bg-slate-200 transition-colors">
+                  <X size={18} className="text-slate-500" />
+                </button>
+              </div>
             </div>
 
             {/* Content Body */}
