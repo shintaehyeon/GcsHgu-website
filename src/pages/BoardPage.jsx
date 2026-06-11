@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { FileText, Download, PlusCircle, ArrowLeft, Paperclip, X, Image, AlertCircle } from "lucide-react";
-import imageCompression from "browser-image-compression";
+import { FileText, Download, PlusCircle, ArrowLeft, X, MessageSquare, CornerDownRight } from "lucide-react";
 import { supabase } from "../supabase";
 
 export default function BoardPage() {
@@ -24,12 +23,14 @@ export default function BoardPage() {
   const [isWriteModalOpen, setIsWriteModalOpen] = useState(false);
   const [newTitle, setNewTitle] = useState("");
   const [newContent, setNewContent] = useState("");
-  const [attachedFiles, setAttachedFiles] = useState([]); // Array of up to 2 files
   const [uploading, setUploading] = useState(false);
 
-  // Constants for limits
-  const STUDENT_FILE_SIZE_LIMIT = 3 * 1024 * 1024; // 3MB
-  const MAX_STUDENT_FILES = 2;
+  // Detail Modal & Comments States
+  const [selectedPost, setSelectedPost] = useState(null);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState("");
+  const [commentSubmitting, setCommentSubmitting] = useState(false);
 
   // Fetch notices and free posts from Supabase
   const fetchData = async () => {
@@ -56,6 +57,20 @@ export default function BoardPage() {
       console.error("데이터 로드 실패 (Supabase 설정 필요):", error.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchComments = async (postId) => {
+    try {
+      const { data, error } = await supabase
+        .from("comments")
+        .select("*")
+        .eq("post_id", postId)
+        .order("created_at", { ascending: true });
+      if (error) throw error;
+      setComments(data || []);
+    } catch (err) {
+      console.error("댓글 불러오기 실패:", err.message);
     }
   };
 
@@ -92,29 +107,6 @@ export default function BoardPage() {
     setIsWriteModalOpen(true);
   };
 
-  const handleFileChange = (e) => {
-    const files = Array.from(e.target.files);
-    
-    // Check if adding these would exceed the 2-file limit
-    if (attachedFiles.length + files.length > MAX_STUDENT_FILES) {
-      alert(`이미지는 최대 ${MAX_STUDENT_FILES}개까지만 첨부할 수 있습니다.`);
-      return;
-    }
-
-    // Check size limit (3MB) for each file
-    const oversizedFiles = files.filter(file => file.size > STUDENT_FILE_SIZE_LIMIT);
-    if (oversizedFiles.length > 0) {
-      alert(`파일 용량 초과: 학생 업로드 이미지는 파일당 최대 3MB 이하만 가능합니다.\n(초과된 파일: ${oversizedFiles.map(f => f.name).join(", ")})`);
-      return;
-    }
-
-    setAttachedFiles([...attachedFiles, ...files]);
-  };
-
-  const removeAttachedFile = (index) => {
-    setAttachedFiles(attachedFiles.filter((_, i) => i !== index));
-  };
-
   const handleSubmitPost = async (e) => {
     e.preventDefault();
     if (!newTitle.trim() || !newContent.trim()) {
@@ -124,51 +116,13 @@ export default function BoardPage() {
 
     setUploading(true);
     try {
-      const uploadedFileUrls = [];
-      const uploadedFileNames = [];
-
-      // 1. Compress and upload each file
-      for (let i = 0; i < attachedFiles.length; i++) {
-        const file = attachedFiles[i];
-        
-        // Compress image client-side to keep target sizes under 500KB and save storage costs
-        const compressionOptions = {
-          maxSizeMB: 0.5, // limit to 500KB
-          maxWidthOrHeight: 1200,
-          useWebWorker: true,
-        };
-        const compressedFile = await imageCompression(file, compressionOptions);
-
-        const fileExt = file.name.split(".").pop();
-        const filePath = `board/${Date.now()}_${i}_${Math.random().toString(36).substr(2, 9)}.${fileExt}`;
-
-        // Upload to Supabase Storage
-        const { error: uploadError } = await supabase.storage
-          .from("board-attachments")
-          .upload(filePath, compressedFile);
-
-        if (uploadError) throw uploadError;
-
-        // Get public URL
-        const { data } = supabase.storage
-          .from("board-attachments")
-          .getPublicUrl(filePath);
-
-        uploadedFileUrls.push(data.publicUrl);
-        uploadedFileNames.push(file.name);
-      }
-
-      // 2. Insert post row with multiple attachments
+      // Insert post row (text-only)
       const { error: insertError } = await supabase.from("posts").insert([
         {
           title: newTitle,
           content: newContent,
           author_name: currentUser.name || currentUser.email.split("@")[0],
           author_email: currentUser.email,
-          file_name_1: uploadedFileNames[0] || null,
-          file_url_1: uploadedFileUrls[0] || null,
-          file_name_2: uploadedFileNames[1] || null,
-          file_url_2: uploadedFileUrls[1] || null,
         },
       ]);
 
@@ -179,7 +133,6 @@ export default function BoardPage() {
       // Reset Form and refresh
       setNewTitle("");
       setNewContent("");
-      setAttachedFiles([]);
       setIsWriteModalOpen(false);
       fetchData();
     } catch (error) {
@@ -190,27 +143,41 @@ export default function BoardPage() {
   };
 
   const handleRowClick = (post, isNotice = false) => {
-    let fileInfo = "";
-    const hasFiles = post.file_url || post.file_url_1 || post.file_url_2;
-    
-    if (hasFiles) {
-      const fileNames = [];
-      if (post.file_name) fileNames.push(post.file_name);
-      if (post.file_name_1) fileNames.push(post.file_name_1);
-      if (post.file_name_2) fileNames.push(post.file_name_2);
-
-      fileInfo = `\n\n[첨부 이미지/파일: ${fileNames.join(", ")} - 미리보기 미제공]`;
-      
-      if (isNotice) {
-        // Allow downloading for notices
-        const downloadConfirm = confirm(`제목: ${post.title}\n작성자: ${post.author || "Prof. Alkema"}\n작성일: ${new Date(post.created_at).toLocaleDateString()}\n\n내용:\n${post.content}\n\n첨부파일: ${post.file_name}\n\n파일을 다운로드하시겠습니까?`);
-        if (downloadConfirm) {
-          window.open(post.file_url, "_blank");
-        }
-        return;
-      }
+    setSelectedPost({ ...post, isNotice });
+    setIsDetailModalOpen(true);
+    if (!isNotice) {
+      setComments([]);
+      fetchComments(post.id);
     }
-    alert(`제목: ${post.title}\n작성자: ${post.author_name || post.author || "익명"}\n작성일: ${new Date(post.created_at).toLocaleDateString()}\n\n내용:\n${post.content}${fileInfo}`);
+  };
+
+  const handleSubmitComment = async (e) => {
+    e.preventDefault();
+    if (!currentUser) {
+      alert("로그인 후 댓글을 작성하실 수 있습니다.");
+      return;
+    }
+    if (!newComment.trim()) return;
+
+    setCommentSubmitting(true);
+    try {
+      const { error } = await supabase.from("comments").insert([
+        {
+          post_id: selectedPost.id,
+          content: newComment.trim(),
+          author_name: currentUser.name || currentUser.email.split("@")[0],
+          author_email: currentUser.email,
+        }
+      ]);
+
+      if (error) throw error;
+      setNewComment("");
+      fetchComments(selectedPost.id);
+    } catch (error) {
+      alert("댓글 작성 실패: " + error.message);
+    } finally {
+      setCommentSubmitting(false);
+    }
   };
 
   const TableHeader = () => (
@@ -288,7 +255,7 @@ export default function BoardPage() {
                         <td className="px-3 py-2.5 text-center text-gcs-500 text-xs">{notices.length - index}</td>
                         <td className="px-4 py-2.5 font-medium text-gcs-900 group-hover:text-gcs-600 group-hover:underline flex items-center gap-2">
                           {notice.title}
-                          {notice.file_url && <Paperclip size={12} className="text-gcs-400" title={`첨부파일: ${notice.file_name}`} />}
+                          {notice.file_url && <span className="text-xs text-gcs-600 font-bold bg-gcs-50 border border-gcs-200 px-1.5 py-0.5 rounded">PDF</span>}
                         </td>
                         <td className="px-3 py-2.5 text-center text-gcs-600 text-xs">{notice.author}</td>
                         <td className="px-3 py-2.5 text-center text-gcs-400 text-xs">{new Date(notice.created_at).toLocaleDateString()}</td>
@@ -310,13 +277,11 @@ export default function BoardPage() {
                       </tr>
                     ) : (
                       posts.map((post, index) => {
-                        const hasFiles = post.file_url_1 || post.file_url_2 || post.file_url;
                         return (
                           <tr key={post.id || index} className="hover:bg-gcs-50 cursor-pointer group" onClick={() => handleRowClick(post)}>
                             <td className="px-3 py-2.5 text-center text-gcs-500 text-xs">{posts.length - index}</td>
                             <td className="px-4 py-2.5 font-medium text-gcs-900 group-hover:text-gcs-600 group-hover:underline flex items-center gap-2">
                               {post.title}
-                              {hasFiles && <Paperclip size={12} className="text-gcs-500" title="이미지 첨부됨" />}
                             </td>
                             <td className="px-3 py-2.5 text-center text-gcs-600 text-xs">{post.author_name}</td>
                             <td className="px-3 py-2.5 text-center text-gcs-400 text-xs">{new Date(post.created_at).toLocaleDateString()}</td>
@@ -337,7 +302,7 @@ export default function BoardPage() {
         </div>
       </div>
 
-      {/* Beautiful Write Modal */}
+      {/* Write Modal (Text-Only for Students) */}
       {isWriteModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
           <div className="bg-white rounded-2xl w-full max-w-xl shadow-2xl border border-slate-100 flex flex-col overflow-hidden">
@@ -368,49 +333,11 @@ export default function BoardPage() {
                 <textarea 
                   value={newContent}
                   onChange={(e) => setNewContent(e.target.value)}
-                  placeholder="내용을 입력해 주세요" 
+                  placeholder="자유게시판은 깨끗한 커뮤니티 조성을 위해 텍스트 전용으로 운영됩니다." 
                   required
-                  rows={6}
+                  rows={8}
                   className="w-full text-sm border border-slate-200 focus:border-gcs-600 focus:ring-1 focus:ring-gcs-600 rounded-lg p-2.5 outline-none transition-colors resize-none"
                 />
-              </div>
-
-              {/* Photo Upload Attachment */}
-              <div className="bg-slate-50 p-3 rounded-lg border border-dashed border-slate-200">
-                <div className="flex items-center justify-between">
-                  <div className="flex flex-col gap-0.5">
-                    <span className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
-                      <Image size={14} className="text-gcs-600" /> 이미지 첨부하기 (최대 {MAX_STUDENT_FILES}개)
-                    </span>
-                    <span className="text-[10px] text-slate-400">
-                      ※ 파일당 최대 3MB 이하 업로드 가능 (업로드 시 자동 압축 진행)
-                    </span>
-                    <span className="text-[9px] text-red-500 flex items-center gap-1">
-                      <AlertCircle size={10} /> 가독성을 위해 첨부된 파일은 본문 내 썸네일 없이 텍스트 아이콘만 노출됩니다.
-                    </span>
-                  </div>
-                  <label className={`cursor-pointer bg-white border border-slate-200 hover:border-gcs-500 hover:text-gcs-600 text-slate-600 px-3 py-1.5 rounded-lg text-xs font-bold transition-all shrink-0 ${attachedFiles.length >= MAX_STUDENT_FILES ? 'opacity-50 pointer-events-none' : ''}`}>
-                    <input 
-                      type="file" 
-                      accept="image/*" 
-                      multiple 
-                      onChange={handleFileChange} 
-                      className="hidden" 
-                      disabled={attachedFiles.length >= MAX_STUDENT_FILES}
-                    />
-                    파일 추가
-                  </label>
-                </div>
-                {attachedFiles.length > 0 && (
-                  <div className="mt-3 space-y-1.5">
-                    {attachedFiles.map((file, idx) => (
-                      <div key={idx} className="text-xs text-gcs-600 font-bold bg-gcs-50 px-2 py-1 rounded flex justify-between items-center border border-gcs-100">
-                        <span className="truncate max-w-[80%]"># {idx + 1}: {file.name} ({(file.size / 1024 / 1024).toFixed(2)}MB)</span>
-                        <button type="button" onClick={() => removeAttachedFile(idx)} className="text-red-500 hover:text-red-700 font-bold">삭제</button>
-                      </div>
-                    ))}
-                  </div>
-                )}
               </div>
 
               {/* Form Buttons */}
@@ -428,10 +355,116 @@ export default function BoardPage() {
                   disabled={uploading}
                   className="px-4 py-2 bg-gcs-900 text-white text-xs font-bold rounded-lg hover:bg-gcs-800 shadow-md transition-colors flex items-center gap-1.5"
                 >
-                  {uploading ? "업로드 및 압축 중..." : "작성 완료"}
+                  {uploading ? "등록 중..." : "작성 완료"}
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Beautiful Detail & Comments Modal */}
+      {isDetailModalOpen && selectedPost && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm overflow-y-auto">
+          <div className="bg-white rounded-2xl w-full max-w-2xl shadow-2xl border border-slate-100 flex flex-col overflow-hidden my-8 max-h-[85vh]">
+            {/* Header */}
+            <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50 shrink-0">
+              <span className="text-xs font-bold bg-gcs-900 text-white px-2 py-0.5 rounded">
+                {selectedPost.isNotice ? "공지사항" : "자유게시글"}
+              </span>
+              <button onClick={() => setIsDetailModalOpen(false)} className="p-1 rounded-full hover:bg-slate-200 transition-colors">
+                <X size={18} className="text-slate-500" />
+              </button>
+            </div>
+
+            {/* Content Body */}
+            <div className="p-6 overflow-y-auto flex-1 space-y-6">
+              <div>
+                <h2 className="text-xl font-black text-gcs-900 mb-2">{selectedPost.title}</h2>
+                <div className="flex gap-3 text-xs text-gcs-500 pb-4 border-b border-slate-100">
+                  <span>작성자: <strong className="text-gcs-800">{selectedPost.author_name || selectedPost.author || "익명"}</strong></span>
+                  <span>|</span>
+                  <span>등록일: {new Date(selectedPost.created_at).toLocaleDateString()}</span>
+                </div>
+              </div>
+
+              {/* Main Content Text */}
+              <div className="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap min-h-[120px] bg-slate-50 p-4 rounded-xl border border-slate-100">
+                {selectedPost.content}
+              </div>
+
+              {/* Attachments for Notices */}
+              {selectedPost.isNotice && selectedPost.file_url && (
+                <div className="bg-gcs-50 p-3 rounded-lg border border-gcs-200 flex justify-between items-center">
+                  <div className="flex items-center gap-2 text-xs font-bold text-gcs-900">
+                    <FileText size={16} />
+                    <span>{selectedPost.file_name || "첨부파일.pdf"}</span>
+                  </div>
+                  <a 
+                    href={selectedPost.file_url} 
+                    target="_blank" 
+                    rel="noreferrer"
+                    className="bg-white border border-gcs-300 hover:bg-gcs-100 text-gcs-900 px-3 py-1 rounded text-xs font-bold flex items-center gap-1 shadow-sm transition-colors"
+                  >
+                    <Download size={12} /> 다운로드
+                  </a>
+                </div>
+              )}
+
+              {/* Comments Section (Only for Free Board Posts) */}
+              {!selectedPost.isNotice && (
+                <div className="pt-4 border-t border-slate-100 space-y-4">
+                  <h4 className="text-sm font-bold text-gcs-900 flex items-center gap-1.5">
+                    <MessageSquare size={16} className="text-gcs-600" /> 댓글 ({comments.length})
+                  </h4>
+
+                  {/* Comment List */}
+                  <div className="space-y-3 max-h-[200px] overflow-y-auto pr-1">
+                    {comments.length === 0 ? (
+                      <p className="text-xs text-slate-400 py-4 text-center">등록된 댓글이 없습니다. 첫 댓글을 달아보세요!</p>
+                    ) : (
+                      comments.map((comment) => (
+                        <div key={comment.id} className="bg-slate-50 p-3 rounded-lg border border-slate-100 text-xs flex gap-2">
+                          <CornerDownRight size={14} className="text-slate-400 shrink-0 mt-0.5" />
+                          <div className="flex-1 min-w-0">
+                            <div className="flex justify-between items-center mb-1">
+                              <span className="font-bold text-gcs-800">{comment.author_name}</span>
+                              <span className="text-[10px] text-slate-400">{new Date(comment.created_at).toLocaleDateString()}</span>
+                            </div>
+                            <p className="text-slate-700 leading-normal">{comment.content}</p>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+
+                  {/* Comment Input */}
+                  {currentUser ? (
+                    <form onSubmit={handleSubmitComment} className="flex gap-2 pt-2">
+                      <input 
+                        type="text" 
+                        value={newComment}
+                        onChange={(e) => setNewComment(e.target.value)}
+                        placeholder="깨끗한 댓글을 입력해 주세요" 
+                        required
+                        className="flex-1 text-xs border border-slate-200 focus:border-gcs-600 focus:ring-1 focus:ring-gcs-600 rounded-lg p-2.5 outline-none transition-colors"
+                      />
+                      <button 
+                        type="submit" 
+                        disabled={commentSubmitting}
+                        className="bg-gcs-900 hover:bg-gcs-800 text-white text-xs font-bold px-4 rounded-lg shrink-0 transition-colors"
+                      >
+                        {commentSubmitting ? "등록 중" : "등록"}
+                      </button>
+                    </form>
+                  ) : (
+                    <div className="bg-slate-50 border border-dashed border-slate-200 text-center p-3 rounded-lg text-xs text-slate-500">
+                      로그인한 사용자만 댓글 작성이 가능합니다.
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}
