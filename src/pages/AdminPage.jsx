@@ -15,7 +15,7 @@ export default function AdminPage() {
   const [loadingPosts, setLoadingPosts] = useState(true);
 
   // Constants for limits
-  const ADMIN_FILE_SIZE_LIMIT = 15 * 1024 * 1024; // 15MB
+  const ADMIN_FILE_SIZE_LIMIT = 50 * 1024 * 1024; // 50MB
 
   // Authentication check
   const [currentUser, setCurrentUser] = useState(() => {
@@ -64,7 +64,7 @@ export default function AdminPage() {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
       if (selectedFile.size > ADMIN_FILE_SIZE_LIMIT) {
-        alert("업로드 실패: 공지사항 첨부파일은 서버 용량 보존을 위해 파일당 최대 15MB까지만 업로드 가능합니다.");
+        alert("업로드 실패: 공지사항 첨부파일은 서버 용량 보존을 위해 파일당 최대 50MB까지만 업로드 가능합니다.");
         e.target.value = ""; // clear input
         setFile(null);
         return;
@@ -187,7 +187,7 @@ export default function AdminPage() {
                     <span className="text-gcs-900 font-bold mb-1">
                       {file ? file.name : "클릭하여 파일을 선택하세요"}
                     </span>
-                    <span className="text-gcs-500 text-sm">PDF, DOCX 등 지원 (최대 15MB)</span>
+                    <span className="text-gcs-500 text-sm">PDF, DOCX 등 지원 (최대 50MB)</span>
                   </label>
                 </div>
               </div>
