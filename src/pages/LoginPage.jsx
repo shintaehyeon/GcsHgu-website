@@ -8,9 +8,13 @@ export default function LoginPage() {
 
   useEffect(() => {
     // Check if there is an active session after redirection
+    let isPrompted = false;
+
     const checkSession = async () => {
+      if (isPrompted) return;
       const { data: { session }, error } = await supabase.auth.getSession();
-      if (session?.user) {
+      if (session?.user && !isPrompted) {
+        isPrompted = true;
         const email = session.user.email;
         const name = session.user.user_metadata?.full_name || email.split("@")[0];
         
