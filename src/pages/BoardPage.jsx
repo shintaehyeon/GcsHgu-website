@@ -260,6 +260,11 @@ export default function BoardPage() {
               <span className="text-xs text-gcs-600 font-bold bg-slate-50 px-2.5 py-1.5 rounded-md border border-slate-100 shadow-sm">
                 {currentUser.name} ({currentUser.role === 'admin' ? '교수님' : '학생'})
               </span>
+              {currentUser.role === 'admin' && (
+                <Link to="/admin" className="bg-gcs-900 hover:bg-gcs-800 text-white px-3 py-1.5 rounded-md font-bold text-xs shadow-sm transition-colors">
+                  관리자 페이지
+                </Link>
+              )}
               <button onClick={handleLogout} className="bg-red-50 text-red-600 border border-red-100 px-3 py-1.5 rounded-md font-bold text-xs hover:bg-red-100 shadow-sm transition-colors">
                 로그아웃
               </button>
