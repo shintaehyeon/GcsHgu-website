@@ -69,19 +69,6 @@ export default function LoginPage() {
     }
   };
 
-  const handleMockLogin = (isAdmin) => {
-    // Keep mock login for fast testing
-    if (isAdmin) {
-      localStorage.setItem("user", JSON.stringify({ email: "22101046@handong.ac.kr", role: "admin", name: "Prof. Alkema (Test)" }));
-      alert("로그인 성공 (테스트용 Mock 관리자: 22101046@handong.ac.kr)");
-      navigate("/admin");
-    } else {
-      localStorage.setItem("user", JSON.stringify({ email: "22101046@handong.ac.kr", role: "student", name: "학생 테스트" }));
-      alert("로그인 성공 (테스트용 Mock 학생: 22101046@handong.ac.kr)");
-      navigate("/board");
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gcs-50 flex flex-col items-center justify-center p-4">
       <div className="bg-white p-8 rounded-3xl shadow-xl w-full max-w-md border border-gcs-100 text-center">
@@ -97,30 +84,6 @@ export default function LoginPage() {
             <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="w-5 h-5" />
             {loading ? "연결 중..." : "구글 계정 로그인 (@handong.ac.kr)"}
           </button>
-          
-          <div className="relative py-4">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-slate-200"></div>
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="bg-white px-2 text-slate-400">개발/테스트용 임시 로그인</span>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <button
-              onClick={() => handleMockLogin(false)}
-              className="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold py-2 px-3 rounded-lg transition-colors"
-            >
-              학생 임시 로그인
-            </button>
-            <button
-              onClick={() => handleMockLogin(true)}
-              className="bg-gcs-900 hover:bg-gcs-800 text-white text-xs font-bold py-2 px-3 rounded-lg transition-colors"
-            >
-              교수 임시 로그인
-            </button>
-          </div>
         </div>
 
         <button onClick={() => navigate("/")} className="mt-8 text-gcs-600 hover:text-gcs-900 font-medium text-sm underline">
